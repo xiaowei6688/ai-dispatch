@@ -1,0 +1,27 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="ignoredPackages">
+        <list>
+          <option value="langchain-core" />
+          <option value="langchain" />
+          <option value="xgboost-3.2.0" />
+          <option value="PyPDF2-3.0.1" />
+          <option value="readability-0.3.2" />
+          <option value="html_text-0.7.1" />
+          <option value="chardet-7.4.3" />
+          <option value="demjson3-3.0.6" />
+          <option value="xpinyin-0.7.7" />
+          <option value="elasticsearch_dsl-8.18.0" />
+          <option value="zhipuai-2.1.5.20250825" />
+          <option value="volcengine-1.0.220" />
+          <option value="jieba-0.42.1" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyStubPackagesAdvertiser" enabled="false" level="WARNING" enabled_by_default="false" />
+  </profile>
+</component>
