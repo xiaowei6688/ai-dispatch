@@ -1,21 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-core_dispatch_demo.py
-
-Minimal drone dispatch demo based on "无人机调度结构.json".
-
-What it does:
-  1. Load the commented JSON-like structure.
-  2. Read each work_order.woder_order_detail[] item as one work object.
-  3. Filter airports/drones by core availability rules.
-  4. Assign every point to the nearest feasible airport within inspection_radius.
-  5. Build one route per airport and estimate distance, duration and battery use.
-  6. Print a compact summary and optionally write a result JSON file.
-
-Run:
-  python3 core_dispatch_demo.py
-  python3 core_dispatch_demo.py --input /path/to/无人机调度结构.json --output out/core_demo_result.json
-"""
 from __future__ import annotations
 
 import argparse
@@ -33,6 +15,16 @@ DEFAULT_INPUT = "/Users/levin/Documents/泰州无人机调度资料/无人机调
 DEFAULT_OUTPUT = "core_demo_result.json"
 
 CONFIGURABLE_PARAMS = {
+    # 是否启用内置全局分配优化；关闭后回退到原有逐对象贪心指派。
+    "P_ENABLE_ASSIGNMENT_OPTIMIZER": True,
+    # 任务规模超过该值时使用贪心近似，避免在线调度出现过长求解时间。
+    "P_ASSIGNMENT_EXACT_LIMIT": 12,
+    # 分支定界最多搜索节点数；达到上限后保留当前最好解并停止搜索。
+    "P_ASSIGNMENT_NODE_LIMIT": 200000,
+    # 是否启用固定航线下的最少架次分段优化。
+    "P_ENABLE_SORTIE_OPTIMIZER": True,
+    # 是否按方案目标优化同一无人机上独立架次的执行顺序。
+    "P_ENABLE_SCHEDULE_OPTIMIZER": True,
     # P001: 周期任务风力等级阈值；业务JSON只提供天气文本，阈值由算法配置。
     "P001_wind_periodic_max_level": 4,
     # P001: 机场开启自检时，airport.wind_speed 的最大允许风速，单位 m/s。
@@ -534,6 +526,146 @@ def nearest_neighbor_route(airport: Airport, points: List[Any]) -> List[Any]:
     return ordered
 
 
+def improve_route_2opt(airport: Airport, ordered: List[Any]) -> List[Any]:
+    """在最近邻初始解上做轻量 2-opt，保持机场往返和任务对象完整。"""
+    if len(ordered) < 3:
+        return ordered[:]
+    best = ordered[:]
+    best_distance = route_distance_m(airport, best)
+    improved = True
+    while improved:
+        improved = False
+        for i in range(len(best) - 1):
+            for j in range(i + 1, len(best)):
+                candidate = best[:i] + list(reversed(best[i:j + 1])) + best[j + 1:]
+                distance = route_distance_m(airport, candidate)
+                if distance + 0.1 < best_distance:
+                    best, best_distance = candidate, distance
+                    improved = True
+                    break
+            if improved:
+                break
+    return best
+
+
+def _candidate_rows_for_point(
+    point: TargetPoint,
+    airports: List[Airport],
+    date_str: Optional[str],
+    work_order: Dict[str, Any],
+) -> Tuple[List[Airport], List[Dict[str, Any]]]:
+    rows = []
+    feasible_airports = []
+    for airport in airports:
+        ready, reasons = airport_ready(airport, date_str, work_order)
+        in_radius = all(
+            _route_point_distance_to_airport(airport, raw) <= airport.radius_m
+            for raw in point.route_points
+        )
+        feasible = ready and in_radius
+        rows.append({
+            "airport_uid": airport.uid,
+            "airport_name": airport.name,
+            "in_coverage": in_radius,
+            "resource_ready": ready,
+            "compliant": feasible,
+            "feasible": feasible,
+            "reason": "可覆盖且资源可用" if feasible else "; ".join(reasons) + ("" if in_radius else "; 无法覆盖全部航点"),
+        })
+        if feasible:
+            feasible_airports.append(airport)
+    return feasible_airports, rows
+
+
+def optimize_airport_assignment(
+    points: List[TargetPoint],
+    airports: List[Airport],
+    date_str: Optional[str],
+    work_order: Dict[str, Any],
+    scheme_name: str,
+) -> Tuple[Dict[str, Airport], Dict[str, List[Dict[str, Any]]]]:
+    """全局机场分配：小规模用分支定界，大规模回退为带负载项的贪心。
+
+    这是一个无外部依赖的整数分配模型。规则先过滤不可行机场，优化器只在
+    合规候选集合中最小化距离、耗时、电量风险和机场负载不均衡。
+    """
+    candidate_map: Dict[str, List[Airport]] = {}
+    rows_map: Dict[str, List[Dict[str, Any]]] = {}
+    for point in points:
+        candidates, rows = _candidate_rows_for_point(point, airports, date_str, work_order)
+        candidate_map[point.group_id] = candidates
+        rows_map[point.group_id] = rows
+
+    feasible_points = [p for p in points if candidate_map.get(p.group_id)]
+    assignment: Dict[str, Airport] = {}
+    loads = {a.uid: 0 for a in airports}
+
+    def cost(point: TargetPoint, airport: Airport, load: int) -> float:
+        distance = route_distance_m(airport, [point]) / 1000.0
+        _, _, _, duration = estimate_sortie(airport, [point])
+        battery_use = duration / max(airport.drone.battery_life_min, 1.0)
+        if scheme_name == "energy_first":
+            return distance + duration * 0.05 + battery_use * 30 + load * 0.15
+        if scheme_name == "time_first":
+            return distance * 0.5 + duration + load * 0.1
+        return distance + duration * 0.1 + battery_use * 10 + load * 0.25
+
+    # 先分配候选最少的任务，有利于分支定界尽早发现不可行组合。
+    ordered_points = sorted(feasible_points, key=lambda p: len(candidate_map[p.group_id]))
+    exact_limit = int(PARAMS["P_ASSIGNMENT_EXACT_LIMIT"])
+    if len(ordered_points) <= exact_limit:
+        best_score = float("inf")
+        best_assignment: Dict[str, Airport] = {}
+        node_count = 0
+        stopped = False
+
+        def search(index: int, score: float) -> None:
+            nonlocal best_score, best_assignment, node_count, stopped
+            if stopped:
+                return
+            node_count += 1
+            if node_count > int(PARAMS["P_ASSIGNMENT_NODE_LIMIT"]):
+                stopped = True
+                return
+            if score >= best_score:
+                return
+            if index == len(ordered_points):
+                best_score = score
+                best_assignment = assignment.copy()
+                return
+            point = ordered_points[index]
+            for airport in sorted(
+                candidate_map[point.group_id],
+                key=lambda a: cost(point, a, loads[a.uid]),
+            ):
+                assignment[point.group_id] = airport
+                loads[airport.uid] += len(point.route_points)
+                search(index + 1, score + cost(point, airport, loads[airport.uid] - len(point.route_points)))
+                loads[airport.uid] -= len(point.route_points)
+                assignment.pop(point.group_id, None)
+
+        search(0, 0.0)
+        assignment = best_assignment
+        if not assignment:
+            for point in ordered_points:
+                airport = min(
+                    candidate_map[point.group_id],
+                    key=lambda a: cost(point, a, loads[a.uid]),
+                )
+                assignment[point.group_id] = airport
+                loads[airport.uid] += len(point.route_points)
+    else:
+        for point in ordered_points:
+            airport = min(
+                candidate_map[point.group_id],
+                key=lambda a: cost(point, a, loads[a.uid]),
+            )
+            assignment[point.group_id] = airport
+            loads[airport.uid] += len(point.route_points)
+
+    return assignment, rows_map
+
+
 def route_distance_m(airport: Airport, ordered: List[Any]) -> float:
     total = 0.0
     cur_lon, cur_lat = airport.lon, airport.lat
@@ -581,6 +713,41 @@ def split_into_sorties(airport: Airport, ordered: List[Any], max_use_ratio: floa
     return sorties
 
 
+def optimize_sortie_partition(
+    airport: Airport,
+    ordered: List[Any],
+    max_use_ratio: float,
+) -> List[List[Any]]:
+    """固定任务顺序后，用动态规划寻找最少的连续架次分段。"""
+    if len(ordered) < 2:
+        return [ordered[:]] if ordered else []
+    max_min = airport.drone.battery_life_min * max_use_ratio
+    count = len(ordered)
+    best_count = [float("inf")] * (count + 1)
+    previous = [-1] * (count + 1)
+    best_count[0] = 0
+    for end in range(1, count + 1):
+        for start in range(end - 1, -1, -1):
+            segment = ordered[start:end]
+            _, _, _, total_min = estimate_sortie(airport, segment)
+            if total_min > max_min:
+                continue
+            candidate_count = best_count[start] + 1
+            if candidate_count < best_count[end]:
+                best_count[end] = candidate_count
+                previous[end] = start
+    if previous[count] < 0:
+        return split_into_sorties(airport, ordered, max_use_ratio)
+    result: List[List[Any]] = []
+    cursor = count
+    while cursor > 0:
+        start = previous[cursor]
+        result.append(ordered[start:cursor])
+        cursor = start
+    result.reverse()
+    return result
+
+
 def split_item_by_waypoints_for_relay(item: Any, relay_legs: int, airport_uid: str) -> List[WorkSegment]:
     route_points = list(getattr(item, "route_points", []) or [])
     total = len(route_points)
@@ -621,6 +788,146 @@ def split_item_by_waypoints_for_relay(item: Any, relay_legs: int, airport_uid: s
             )
         )
     return chunks
+
+
+def optimize_relay_segments(
+    item: Any,
+    airport: Airport,
+    max_use_ratio: float,
+) -> List[WorkSegment]:
+    """按真实往返航程寻找满足续航硬约束的最少连续航点分段。"""
+    route_points = list(getattr(item, "route_points", []) or [])
+    total = len(route_points)
+    if not route_points:
+        return []
+    max_min = airport.drone.battery_life_min * max_use_ratio
+    best: List[Optional[Tuple[int, float]]] = [None] * (total + 1)
+    previous = [-1] * (total + 1)
+    best[0] = (0, 0.0)
+    for end in range(1, total + 1):
+        for start in range(end - 1, -1, -1):
+            if best[start] is None:
+                continue
+            segment = WorkSegment(
+                item.group_id,
+                item.group_name,
+                airport.uid,
+                route_points[start:end],
+                full_waypoint_count=total,
+            )
+            _, _, _, duration = estimate_sortie(airport, [segment])
+            use_pct = duration / max(airport.drone.battery_life_min, 1.0) * 100
+            remaining_pct = 100 - use_pct
+            if (
+                duration > max_min
+                or use_pct > airport.drone.battery_pct
+                or remaining_pct <= PARAMS["battery_return_pct"]
+            ):
+                continue
+            candidate = (best[start][0] + 1, best[start][1] + duration)
+            if best[end] is None or candidate < best[end]:
+                best[end] = candidate
+                previous[end] = start
+    if best[total] is None:
+        return [WorkSegment(
+            item.group_id,
+            item.group_name,
+            airport.uid,
+            route_points,
+            full_waypoint_count=total,
+        )]
+    ranges = []
+    cursor = total
+    while cursor > 0:
+        start = previous[cursor]
+        ranges.append((start, cursor))
+        cursor = start
+    ranges.reverse()
+    segment_count = len(ranges)
+    return [
+        WorkSegment(
+            item.group_id,
+            item.group_name,
+            airport.uid,
+            route_points[start:end],
+            full_waypoint_count=total,
+            segment_index=index,
+            segment_count=segment_count,
+        )
+        for index, (start, end) in enumerate(ranges, start=1)
+    ]
+
+
+def schedule_plans(
+    plans: List[Dict[str, Any]],
+    airports: List[Airport],
+    scheme_name: str,
+    window_start: Optional[datetime],
+    window_end: Optional[datetime],
+) -> Tuple[float, float]:
+    """按资源串行排程；接力段保持顺序，独立架次按方案目标排序。"""
+    airport_map = {a.uid: a for a in airports}
+    groups: Dict[Tuple[str, str], Dict[int, List[Dict[str, Any]]]] = {}
+    for plan in plans:
+        resource = (plan["airport_uid"], plan["drone_id"])
+        groups.setdefault(resource, {}).setdefault(plan["sortie_index"], []).append(plan)
+
+    resource_finishes = []
+    completion_values = []
+    for resource, sortie_map in groups.items():
+        blocks = []
+        for sortie_index, block in sortie_map.items():
+            block.sort(key=lambda p: p["relay_leg"])
+            duration = sum(p["total_min"] + p["charging_duration_min"] for p in block)
+            risk = max(p["battery_use_pct"] for p in block)
+            blocks.append((sortie_index, block, duration, risk))
+        schedule_optimized = PARAMS.get("P_ENABLE_SCHEDULE_OPTIMIZER", True)
+        if schedule_optimized and scheme_name == "time_first":
+            blocks.sort(key=lambda row: (row[2], row[0]))
+        elif schedule_optimized and scheme_name == "energy_first":
+            blocks.sort(key=lambda row: (row[3], row[2], row[0]))
+        else:
+            blocks.sort(key=lambda row: row[0])
+
+        airport = airport_map[resource[0]]
+        initial_wait = 0.0
+        if airport.drone.status != PARAMS["P008_ready_drone_status"]:
+            initial_wait = max(0.0, float(airport.drone.charge_remaining_min or 0.0))
+        clock = max(initial_wait, float(PARAMS["P012_response_min"]))
+        previous_finish: Optional[float] = None
+        schedule_order = 0
+        for _, block, _, _ in blocks:
+            for plan in block:
+                schedule_order += 1
+                start = clock
+                finish = start + plan["total_min"]
+                plan["schedule_order"] = schedule_order
+                plan["planned_takeoff_offset_min"] = round(start, 1)
+                plan["planned_finish_offset_min"] = round(finish, 1)
+                plan["charge_wait_before_takeoff_min"] = round(
+                    0.0 if previous_finish is None else start - previous_finish, 1
+                )
+                planned_start = window_start + timedelta(minutes=start) if window_start else None
+                planned_finish = window_start + timedelta(minutes=finish) if window_start else None
+                recovery_finish = finish + plan["charging_duration_min"]
+                plan["planned_start_time"] = fmt_dt(planned_start)
+                plan["planned_end_time"] = fmt_dt(planned_finish)
+                plan["resource_recovery_end_offset_min"] = round(recovery_finish, 1)
+                plan["resource_recovery_end_time"] = fmt_dt(
+                    window_start + timedelta(minutes=recovery_finish) if window_start else None
+                )
+                plan["within_work_order_window"] = bool(
+                    planned_start
+                    and planned_finish
+                    and (window_end is None or planned_finish <= window_end)
+                )
+                completion_values.append(finish)
+                previous_finish = finish
+                clock = recovery_finish
+        resource_finishes.append(previous_finish or 0.0)
+    makespan = max(resource_finishes, default=0.0)
+    average_completion = sum(completion_values) / len(completion_values) if completion_values else 0.0
+    return round(makespan, 1), round(average_completion, 1)
 
 
 def choose_airport(
@@ -758,9 +1065,70 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
     decision_rows = []
     elapsed_min = 0.0
 
+    optimized_assignment: Dict[str, Airport] = {}
+    optimized_candidates: Dict[str, List[Dict[str, Any]]] = {}
+    if PARAMS.get("P_ENABLE_ASSIGNMENT_OPTIMIZER", True):
+        optimized_assignment, optimized_candidates = optimize_airport_assignment(
+            targets, airports, date_str, work_order, scheme_name
+        )
+
     for point in targets:
         load = {k: sum(len(getattr(x, "route_points", [])) for x in v) for k, v in assignments.items()}
-        if scheme_name in ("time_first", "energy_first"):
+        if scheme_name == "balanced" and optimized_assignment:
+            airport = optimized_assignment.get(point.group_id)
+            candidates = optimized_candidates.get(point.group_id, [])
+            candidate_airports = [c for c in candidates if c.get("in_coverage")]
+            compliant_airports = [c for c in candidates if c.get("compliant")]
+            if airport is None:
+                rejected.append({
+                    "target": point.name,
+                    "lon": point.lon,
+                    "lat": point.lat,
+                    "candidates": candidates,
+                    "candidate_airports": candidate_airports,
+                    "compliant_airports": compliant_airports,
+                    "reason": "无合规机场可覆盖该对象",
+                })
+                continue
+            assignments.setdefault(airport.uid, []).append(point)
+            route_id = point.group_id
+            distance_m, flight_min, work_min, total_min = estimate_sortie(airport, [point])
+            battery_use_pct = round(total_min / airport.drone.battery_life_min * 100, 1)
+            start_offset_min = round(elapsed_min, 1)
+            elapsed_min += total_min
+            target_rows.append({
+                "target": point.name,
+                "group": point.group_name,
+                "assigned_airport_uid": airport.uid,
+                "assigned_airport_name": airport.name,
+                "drone_id": airport.drone.drone_id,
+                "route_id": route_id,
+                "waypoint_count": len(point.route_points),
+                "distance_to_airport_m": round(haversine_m(airport.lon, airport.lat, point.lon, point.lat), 1),
+                "distance_m": round(distance_m, 1),
+                "flight_min": round(flight_min, 1),
+                "work_min": round(work_min, 1),
+                "total_min": round(total_min, 1),
+                "battery_use_pct": battery_use_pct,
+                "start_offset_min": start_offset_min,
+                "end_offset_min": round(elapsed_min, 1),
+            })
+            decision_rows.append({
+                "target": point.name,
+                "route_id": route_id,
+                "airport_uid": airport.uid,
+                "airport_name": airport.name,
+                "drone_id": airport.drone.drone_id,
+                "candidate_airports": candidate_airports,
+                "compliant_airports": compliant_airports,
+                "planned_takeoff_min": start_offset_min,
+                "planned_finish_min": round(elapsed_min, 1),
+                "flight_min": round(flight_min, 1),
+                "work_min": round(work_min, 1),
+                "total_min": round(total_min, 1),
+                "reason": "全局机场分配优化：距离 + 时长 + 电量风险 + 负载均衡",
+            })
+        elif scheme_name in ("time_first", "energy_first"):
             segments, candidates = split_object_by_airport(point, airports, date_str, work_order, scheme_name, load)
             candidate_airports = [c for c in candidates if c.get("in_coverage")]
             compliant_airports = [c for c in candidates if c.get("compliant")]
@@ -878,43 +1246,40 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
     airport_map = {a.uid: a for a in airports}
     for airport_uid, pts in assignments.items():
         airport = airport_map[airport_uid]
-        ordered = nearest_neighbor_route(airport, pts)
+        ordered = improve_route_2opt(airport, nearest_neighbor_route(airport, pts))
         max_use_ratio = scheme_max_use_ratio(scheme_name)
-        sorties = split_into_sorties(airport, ordered, max_use_ratio)
+        if PARAMS.get("P_ENABLE_SORTIE_OPTIMIZER", True):
+            sorties = optimize_sortie_partition(airport, ordered, max_use_ratio)
+        else:
+            sorties = split_into_sorties(airport, ordered, max_use_ratio)
         for idx, sortie in enumerate(sorties, start=1):
             distance_m, flight_min, work_min, total_min = estimate_sortie(airport, sortie)
             max_min = airport.drone.battery_life_min * max_use_ratio
-            relay_legs = 1
-            leg_work_min = work_min
             relay_reason = ""
             if total_min > max_min and len(sortie) == 1:
-                safety_min = max(flight_min * PARAMS["P010_safety_ratio"], PARAMS["P011_safety_fixed_min"])
-                max_work_per_leg = max_min - flight_min - safety_min - PARAMS["P040_prepare_min"]
-                relay_legs = math.ceil(work_min / max_work_per_leg) if max_work_per_leg > 0 else 1
-                leg_work_min = work_min / relay_legs
+                if PARAMS.get("P_ENABLE_SORTIE_OPTIMIZER", True):
+                    relay_segments = optimize_relay_segments(sortie[0], airport, max_use_ratio)
+                else:
+                    safety_min = max(
+                        flight_min * PARAMS["P010_safety_ratio"],
+                        PARAMS["P011_safety_fixed_min"],
+                    )
+                    max_work_per_leg = max_min - flight_min - safety_min - PARAMS["P040_prepare_min"]
+                    relay_count = math.ceil(work_min / max_work_per_leg) if max_work_per_leg > 0 else 1
+                    relay_segments = split_item_by_waypoints_for_relay(
+                        sortie[0], relay_count, airport.uid
+                    )
+                relay_legs = len(relay_segments)
+                execution_legs: List[List[Any]] = [[segment] for segment in relay_segments]
                 relay_reason = (
                     f"完整执行约{round(total_min, 1)}min，超过本方案单段安全上限"
-                    f"{round(max_min, 1)}min；拆成{relay_legs}段，每段返航后再接续。"
+                    f"{round(max_min, 1)}min；按真实往返航程优化为{relay_legs}段，每段返航后再接续。"
                 )
-            relay_segments = []
-            if relay_legs > 1 and len(sortie) == 1:
-                relay_segments = split_item_by_waypoints_for_relay(sortie[0], relay_legs, airport.uid)
             else:
-                relay_segments = [
-                    WorkSegment(
-                        p.group_id,
-                        p.group_name,
-                        airport.uid,
-                        p.route_points,
-                        full_waypoint_count=len(p.route_points),
-                        segment_index=1,
-                        segment_count=1,
-                    )
-                    for p in sortie
-                ]
-            leg_offset = 0
-            for seg_index, segment_item in enumerate(relay_segments, start=1):
-                seg_distance_m, seg_flight_min, seg_work_min, _ = estimate_sortie(airport, [segment_item])
+                execution_legs = [sortie]
+                relay_legs = 1
+            for seg_index, leg_items in enumerate(execution_legs, start=1):
+                seg_distance_m, seg_flight_min, seg_work_min, _ = estimate_sortie(airport, leg_items)
                 safety_min = max(seg_flight_min * PARAMS["P010_safety_ratio"], PARAMS["P011_safety_fixed_min"])
                 leg_total_min = PARAMS["P040_prepare_min"] + seg_flight_min + seg_work_min + safety_min
                 battery_use_pct = round(leg_total_min / airport.drone.battery_life_min * 100, 1)
@@ -924,8 +1289,10 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                     and leg_total_min <= max_min
                     and battery_meta["remaining_pct"] > PARAMS["battery_return_pct"]
                 )
-                start_wp = segment_item.route_points[0].get("name") if segment_item.route_points else ""
-                end_wp = segment_item.route_points[-1].get("name") if segment_item.route_points else ""
+                start_wp = leg_items[0].route_points[0].get("name") if leg_items[0].route_points else ""
+                end_wp = leg_items[-1].route_points[-1].get("name") if leg_items[-1].route_points else ""
+                segment_index = getattr(leg_items[0], "segment_index", 1) if len(leg_items) == 1 else 1
+                segment_count = getattr(leg_items[0], "segment_count", 1) if len(leg_items) == 1 else 1
                 plans.append(
                     {
                         "scheme_name": scheme_name,
@@ -939,21 +1306,21 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                         "relay_leg": seg_index,
                         "relay_legs": relay_legs,
                         "relay_reason": relay_reason,
-                        "point_count": len(segment_item.route_points),
-                        "object_names": [segment_item.group_name],
-                    "route": [
-                        {
-                            "obj_id": segment_item.group_id,
-                            "obj_name": segment_item.group_name,
-                            "center_lon": segment_item.lon,
-                            "center_lat": segment_item.lat,
-                            "waypoint_count": len(segment_item.route_points),
-                            "first_waypoint": start_wp,
-                            "last_waypoint": end_wp,
-                            "waypoints": segment_item.route_points,
-                        }
-                        for _ in [segment_item]
-                    ],
+                        "point_count": sum(len(item.route_points) for item in leg_items),
+                        "object_names": [item.group_name for item in leg_items],
+                        "route": [
+                            {
+                                "obj_id": item.group_id,
+                                "obj_name": item.group_name,
+                                "center_lon": item.lon,
+                                "center_lat": item.lat,
+                                "waypoint_count": len(item.route_points),
+                                "first_waypoint": item.route_points[0].get("name") if item.route_points else "",
+                                "last_waypoint": item.route_points[-1].get("name") if item.route_points else "",
+                                "waypoints": item.route_points,
+                            }
+                            for item in leg_items
+                        ],
                         "distance_m": round(seg_distance_m, 1),
                         "flight_min": round(seg_flight_min, 1),
                         "work_min": round(seg_work_min, 1),
@@ -968,8 +1335,8 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                         "battery_available_pct": airport.drone.battery_pct,
                         "charging_duration_min": airport.drone.charging_duration_min,
                         "feasible_after_endurance_check": feasible,
-                        "segment_index": segment_item.segment_index,
-                        "segment_count": segment_item.segment_count,
+                        "segment_index": segment_index,
+                        "segment_count": segment_count,
                         "segment_start_waypoint": start_wp,
                         "segment_end_waypoint": end_wp,
                     }
@@ -981,55 +1348,9 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
     if any(not p["feasible_after_endurance_check"] for p in plans):
         status = "partial"
 
-    ordered_plans = sorted(
-        plans,
-        key=lambda p: (
-            p["airport_name"],
-            p["sortie_index"],
-            p["relay_leg"],
-            tuple(r["obj_id"] for r in p["route"]),
-        ),
+    estimated_completion_min, average_completion_min = schedule_plans(
+        plans, airports, scheme_name, window_start, window_end
     )
-    resource_last_finish: Dict[Tuple[str, str], float] = {}
-    resource_ready_clocks: Dict[Tuple[str, str], float] = {}
-    response_anchor_min = float(PARAMS["P012_response_min"])
-    for airport in airports:
-        key = (airport.uid, airport.drone.drone_id)
-        initial_wait = 0.0
-        if airport.drone.status != PARAMS["P008_ready_drone_status"]:
-            charge_remaining = airport.drone.charge_remaining_min
-            if charge_remaining is not None:
-                initial_wait = max(0.0, float(charge_remaining))
-        resource_ready_clocks[key] = max(initial_wait, response_anchor_min)
-    for plan in ordered_plans:
-        resource_key = (plan["airport_uid"], plan["drone_id"])
-        previous_finish = resource_last_finish.get(resource_key)
-        start = resource_ready_clocks.get(resource_key, 0.0)
-        finish = start + plan["total_min"]
-        charge_wait_min = 0.0
-        if previous_finish is not None:
-            charge_wait_min = max(0.0, start - previous_finish)
-        plan["planned_takeoff_offset_min"] = round(start, 1)
-        plan["planned_finish_offset_min"] = round(finish, 1)
-        plan["charge_wait_before_takeoff_min"] = round(charge_wait_min, 1)
-        planned_start = window_start + timedelta(minutes=start) if window_start else None
-        planned_finish = window_start + timedelta(minutes=finish) if window_start else None
-        recovery_finish = finish + plan["charging_duration_min"]
-        planned_recovery_finish = window_start + timedelta(minutes=recovery_finish) if window_start else None
-        plan["planned_start_time"] = fmt_dt(planned_start)
-        plan["planned_end_time"] = fmt_dt(planned_finish)
-        plan["resource_recovery_end_offset_min"] = round(recovery_finish, 1)
-        plan["resource_recovery_end_time"] = fmt_dt(planned_recovery_finish)
-        plan["within_work_order_window"] = bool(
-            planned_start
-            and planned_finish
-            and (window_start is None or planned_start >= window_start)
-            and (window_end is None or planned_finish <= window_end)
-        )
-        resource_last_finish[resource_key] = finish
-        resource_ready_clocks[resource_key] = recovery_finish
-
-    estimated_completion_min = round(max(resource_last_finish.values(), default=0.0), 1)
     estimated_completion_time = (
         fmt_dt(window_start + timedelta(minutes=estimated_completion_min))
         if window_start and estimated_completion_min
@@ -1074,10 +1395,14 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
             "warn_or_worse_count": sum(1 for p in plans if p["battery_level"] in ("预警", "接力", "返航")),
             "return_risk_count": sum(1 for p in plans if p["battery_level"] == "返航"),
             "estimated_completion_min": estimated_completion_min,
+            "average_sortie_completion_min": average_completion_min,
             "estimated_start_time": fmt_dt(window_start),
             "estimated_completion_time": estimated_completion_time,
             "work_order_end_time": fmt_dt(window_end),
             "within_work_order_window": within_window,
+            "assignment_optimizer": bool(PARAMS.get("P_ENABLE_ASSIGNMENT_OPTIMIZER", True) and scheme_name == "balanced"),
+            "sortie_optimizer": bool(PARAMS.get("P_ENABLE_SORTIE_OPTIMIZER", True)),
+            "schedule_optimizer": bool(PARAMS.get("P_ENABLE_SCHEDULE_OPTIMIZER", True)),
         },
         "plans": sorted(plans, key=lambda p: p["airport_name"]),
         "assignments": target_rows,
