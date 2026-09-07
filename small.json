@@ -1,0 +1,56 @@
+{
+  "airport": [
+    {
+      "airport_uid": "A001",
+      "airport_name": "机场A",
+      "airport_lon": 118.8256513236,
+      "airport_lat": 31.9378899378,
+      "inspection_radius": 5000,
+      "airport_status": 0,
+      "airport_need_check": 0,
+      "drone": {
+        "drone_id": "D001",
+        "drone_vertical": 15,
+        "drone_battery": 100,
+        "drone_status": -1,
+        "battery_life": 30
+      }
+    }
+  ],
+  "work_order": {
+    "woker_order_name": "测试巡检任务",
+    "woker_order_guid": "T001",
+    "start_date": "2026-09-01 09:00:00",
+    "end_date": "2026-09-02 10:00:00",
+    "woker_order_level": 1,
+    "woker_order_execution": 1,
+    "woder_order_detail": [
+      {
+        "obj_id": "OBJ001",
+        "obj_name": "巡检对象1",
+        "obj_data": [
+          {
+            "name": "航点1",
+            "lon": 118.8245661517,
+            "lat": 31.9363580036
+          }
+        ]
+      }
+    ]
+  }
+}
+
+//airport_weather
+//airport_cross_railway
+//current_task_id
+//task_priority
+//task_progress
+//charging_duration
+//charge_remaining_min
+//airport_need_check
+// 但有条件限制：
+//- airport_need_check = 1 时，必须提供 wind_speed 和 rainfall；
+//- current_task_id 不为空时，建议同时提供 task_priority 和 task_progress；
+//- 周期任务 woker_order_execution = 3 时，建议提供 airport_weather；
+//- 无人机处于充电状态时，建议提供 charge_remaining_min；
+//- inspection_radius 必须大于或等于机场到目标航点的距离，否则无法分配。

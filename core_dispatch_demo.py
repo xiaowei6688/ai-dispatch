@@ -75,8 +75,8 @@ CONFIGURABLE_PARAMS = {
     "P037_default_battery_life_min": 30,
     # P038: JSON缺失drone.drone_vertical时使用的默认飞行速度，单位 m/s。
     "P038_default_speed_mps": 15,
-    # P039: 单作业对象标准作业时长，单位分钟。
-    "P039_work_min_per_object": 30,
+    # P039: 单个航点默认作业时长，单位秒。
+    "P039_work_sec_per_waypoint": 3,
     # P040: 起飞前准备时长，单位分钟。
     "P040_prepare_min": 1,
     # P041: 是否启用 airport.inspection_radius 做覆盖预筛。
@@ -709,9 +709,9 @@ def estimate_sortie(airport: Airport, ordered: List[Any]) -> Tuple[float, float,
 def work_minutes_for_item(item: Any) -> float:
     total_points = getattr(item, "full_waypoint_count", 0) or len(getattr(item, "route_points", []) or [])
     point_count = len(getattr(item, "route_points", []) or [])
-    if total_points <= 0:
-        return PARAMS["P039_work_min_per_object"]
-    return PARAMS["P039_work_min_per_object"] * point_count / total_points
+    if point_count <= 0:
+        return 0.0
+    return PARAMS["P039_work_sec_per_waypoint"] * point_count / 60
 
 
 def split_into_sorties(airport: Airport, ordered: List[Any], max_use_ratio: float) -> List[List[Any]]:
@@ -1494,7 +1494,7 @@ def build_rule_audit(data: Dict[str, Any]) -> List[Dict[str, str]]:
         {"param": "P029", "json_fields": "woder_order_detail", "usage": f"对象数>={PARAMS['P029_multi_object_trigger']}触发多机场/多机协同评估"},
         {"param": "P037", "json_fields": "drone.battery_life", "usage": "满电续航是所有续航和接力计算基准"},
         {"param": "P038", "json_fields": "drone.drone_vertical, obj_data速度缺省", "usage": "去首航点和返航按JSON速度，航点内速度字段缺省时沿用该速度"},
-        {"param": "P039", "json_fields": "woder_order_detail", "usage": f"作业时长=对象数×{PARAMS['P039_work_min_per_object']}min"},
+        {"param": "P039", "json_fields": "woder_order_detail[].obj_data", "usage": f"作业时长=航点数×{PARAMS['P039_work_sec_per_waypoint']}秒，按实际分段航点数计算"},
         {"param": "P040", "json_fields": "无显式字段", "usage": f"每段加入起飞前准备{PARAMS['P040_prepare_min']}min"},
         {"param": "P041", "json_fields": "inspection_radius", "usage": "覆盖预筛使用机场台账半径"},
         {"param": "P042", "json_fields": "obj_data[].lon/lat", "usage": "规则表暂不考虑，当前不做顺路合并"},
@@ -2393,7 +2393,7 @@ def build_table_output(result: Dict[str, Any]) -> Dict[str, Any]:
         "sortie_duration": {
             "index": 6,
             "name": "单架次飞行/作业/总时长",
-            "meaning": "距离÷速度 + 对象数×30min + 准备1min + 冗余3min",
+            "meaning": f"距离÷速度 + 航点数×{PARAMS['P039_work_sec_per_waypoint']}秒 + 准备{PARAMS['P040_prepare_min']}min + 冗余{PARAMS['P011_safety_fixed_min']}min",
             "next_step": "续航校验、展示",
             "data": sortie_durations,
         },
