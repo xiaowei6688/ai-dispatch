@@ -39,21 +39,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于无人机覆盖范围内，且当前具备执行任务的可用资源"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备可用的调度资源"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于无人机覆盖范围内，且当前具备执行任务的可用资源"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备可用的调度资源"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于无人机覆盖范围内，且当前具备执行任务的可用资源"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备可用的调度资源"
       }
     ]
   },
@@ -77,7 +77,7 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 35.7,
-        "battery_use_pct": 119.2,
+        "battery_use_pct": 105.8,
         "planned_takeoff_offset_min": 0.0,
         "planned_finish_offset_min": 35.7
       },
@@ -95,7 +95,7 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 35.8,
-        "battery_use_pct": 119.3,
+        "battery_use_pct": 106.0,
         "planned_takeoff_offset_min": 35.7,
         "planned_finish_offset_min": 71.5
       },
@@ -113,7 +113,7 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 35.4,
-        "battery_use_pct": 117.8,
+        "battery_use_pct": 104.5,
         "planned_takeoff_offset_min": 71.5,
         "planned_finish_offset_min": 106.9
       },
@@ -131,7 +131,7 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 35.9,
-        "battery_use_pct": 119.8,
+        "battery_use_pct": 106.5,
         "planned_takeoff_offset_min": 106.9,
         "planned_finish_offset_min": 142.8
       }
@@ -394,9 +394,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 19.5,
-        "battery_use_pct": 65.1,
-        "battery_remaining_pct": 34.9,
-        "battery_level": "预警",
+        "battery_use_pct": 51.8,
+        "battery_remaining_pct": 48.2,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 1,
         "segment_count": 2,
@@ -428,9 +428,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 20.8,
-        "battery_use_pct": 69.4,
-        "battery_remaining_pct": 30.6,
-        "battery_level": "预警",
+        "battery_use_pct": 56.1,
+        "battery_remaining_pct": 43.9,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 2,
         "segment_count": 2,
@@ -462,9 +462,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 20.9,
-        "battery_use_pct": 69.7,
-        "battery_remaining_pct": 30.3,
-        "battery_level": "预警",
+        "battery_use_pct": 56.4,
+        "battery_remaining_pct": 43.6,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 1,
         "segment_count": 2,
@@ -496,9 +496,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 19.5,
-        "battery_use_pct": 64.9,
-        "battery_remaining_pct": 35.1,
-        "battery_level": "预警",
+        "battery_use_pct": 51.5,
+        "battery_remaining_pct": 48.5,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 2,
         "segment_count": 2,
@@ -530,9 +530,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 20.9,
-        "battery_use_pct": 69.6,
-        "battery_remaining_pct": 30.4,
-        "battery_level": "预警",
+        "battery_use_pct": 56.3,
+        "battery_remaining_pct": 43.7,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 1,
         "segment_count": 2,
@@ -564,9 +564,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 19.6,
-        "battery_use_pct": 65.5,
-        "battery_remaining_pct": 34.5,
-        "battery_level": "预警",
+        "battery_use_pct": 52.2,
+        "battery_remaining_pct": 47.8,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 2,
         "segment_count": 2,
@@ -598,9 +598,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 20.6,
-        "battery_use_pct": 68.7,
-        "battery_remaining_pct": 31.3,
-        "battery_level": "预警",
+        "battery_use_pct": 55.3,
+        "battery_remaining_pct": 44.7,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 1,
         "segment_count": 2,
@@ -632,9 +632,9 @@
         "prepare_min": 1,
         "safety_min": 3,
         "total_min": 19.2,
-        "battery_use_pct": 63.9,
-        "battery_remaining_pct": 36.1,
-        "battery_level": "预警",
+        "battery_use_pct": 50.6,
+        "battery_remaining_pct": 49.4,
+        "battery_level": "正常",
         "feasible": true,
         "segment_index": 2,
         "segment_count": 2,
@@ -671,8 +671,8 @@
         "sortie_count": 8,
         "total_route_distance_m": 8139.7,
         "max_plan_duration_min": 20.9,
-        "min_battery_remaining_pct": 30.3,
-        "warn_or_worse_count": 8,
+        "min_battery_remaining_pct": 43.6,
+        "warn_or_worse_count": 0,
         "estimated_completion_min": 173.7,
         "sortie_distribution": [
           {
@@ -2572,7 +2572,7 @@
       {
         "scheme_name": "time_first",
         "scheme_label": "时效优先方案",
-        "description": "该方案以时效为核心，优先优化任务完成时长并减少中继次数，同时严格确保返航路径的安全与合规。",
+        "description": "该方案以时效为核心，优先优化任务完成时间与中继次数，同时严格保障返航链路安全。",
         "is_recommended": false,
         "status": "success",
         "assigned_target_count": 4,
@@ -2581,8 +2581,8 @@
         "sortie_count": 9,
         "total_route_distance_m": 8091.3,
         "max_plan_duration_min": 23.7,
-        "min_battery_remaining_pct": 21.0,
-        "warn_or_worse_count": 5,
+        "min_battery_remaining_pct": 34.4,
+        "warn_or_worse_count": 4,
         "estimated_completion_min": 172.5,
         "sortie_distribution": [
           {
@@ -4564,7 +4564,7 @@
         "sortie_count": 13,
         "total_route_distance_m": 9731.2,
         "max_plan_duration_min": 16.9,
-        "min_battery_remaining_pct": 43.8,
+        "min_battery_remaining_pct": 57.1,
         "warn_or_worse_count": 0,
         "estimated_completion_min": 241.3,
         "sortie_distribution": [
@@ -6761,7 +6761,7 @@
     "data": {
       "recommended_scheme": "balanced",
       "recommended_label": "均衡方案",
-      "reason": "该工单属于1级/立即执行任务，推荐优先级依次为：无返航风险 > 架次少 > 最长耗时短 > 电量风险少 > 总距离短。最终选定均衡方案，状态为success，具体指标为：架次8次，最长耗时20.9min，最低电量余量30.3%，总距离8139.7m。与时效优先方案相比，本方案架次由9次减至8次，最长耗时由23.7min缩短至20.9min，预警/接力/返航段由5段增至8段，总距离由8091.3m微增至8139.7m；与电量稳健方案相比，本方案架次由13次大幅降至8次，最长耗时由16.9min延长至20.9min，预警/接力/返航段由0段增至8段，总距离由9731.2m显著缩短至8139.7m。"
+      "reason": "该工单属于1级/立即执行任务，推荐优先级依次为：无返航风险 > 架次少 > 最长耗时短 > 电量风险少 > 总距离短。最终选定均衡方案，状态为success，具体指标如下：架次8次，最长耗时20.9min，最低电量余量43.6%，总距离8139.7m。与时效优先方案相比，本方案架次由9次减至8次，最长耗时由23.7min缩短至20.9min，预警/接力/返航段由4次降为0次，总距离8139.7m略高于对方的8091.3m；与电量稳健方案相比，本方案架次由13次大幅减少至8次，总距离由9731.2m缩短至8139.7m，但最长耗时20.9min略长于对方的16.9min。"
     }
   },
   "infeasible_reason": {
@@ -6790,7 +6790,7 @@
           "sortie_index": 1,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "任务总时长约35.8min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.8min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6801,7 +6801,7 @@
           "sortie_index": 1,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "任务总时长约35.8min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.8min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6812,7 +6812,7 @@
           "sortie_index": 2,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "任务总时长约35.7min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.7min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6823,7 +6823,7 @@
           "sortie_index": 2,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "任务总时长约35.7min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.7min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6834,7 +6834,7 @@
           "sortie_index": 1,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "任务总时长约35.9min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.9min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6845,7 +6845,7 @@
           "sortie_index": 1,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "任务总时长约35.9min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.9min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6856,7 +6856,7 @@
           "sortie_index": 1,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "任务总时长约35.4min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.4min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         },
         {
@@ -6867,13 +6867,13 @@
           "sortie_index": 1,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "任务总时长约35.4min，超出单段21.0min的安全限制；基于实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
+          "reason": "全程耗时约35.4min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后继续下一段。",
           "charging_duration_min": 30.0
         }
       ],
       "cooperation": {
         "enabled": true,
-        "trigger": "当识别对象数量达到2个及以上时，系统将自动启动多机场或多机协同评估流程。",
+        "trigger": "当涉及对象数量达到2个及以上时，系统将自动启动多机场或多机协同评估流程。",
         "used_airport_count": 3,
         "is_multi_airport": true
       }

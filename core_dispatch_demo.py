@@ -619,8 +619,8 @@ def optimize_airport_assignment(
 
     def cost(point: TargetPoint, airport: Airport, load: int) -> float:
         distance = route_distance_m(airport, [point]) / 1000.0
-        _, _, _, duration = estimate_sortie(airport, [point])
-        battery_use = duration / max(airport.drone.battery_life_min, 1.0)
+        _, flight_min, work_min, duration = estimate_sortie(airport, [point])
+        battery_use = (flight_min + work_min) / max(airport.drone.battery_life_min, 1.0)
         if scheme_name == "energy_first":
             return distance + duration * 0.05 + battery_use * 30 + load * 0.15
         if scheme_name == "time_first":
@@ -962,8 +962,8 @@ def choose_airport(
         ready, reasons = airport_ready(airport, date_str, work_order)
         in_radius = d <= airport.radius_m
         feasible = ready and in_radius
-        single_distance, _, _, single_total = estimate_sortie(airport, [point])
-        single_use = single_total / airport.drone.battery_life_min * 100
+        single_distance, single_flight, single_work, _ = estimate_sortie(airport, [point])
+        single_use = (single_flight + single_work) / airport.drone.battery_life_min * 100
         rows.append(
             {
                 "airport_uid": airport.uid,
@@ -1055,8 +1055,8 @@ def split_object_by_airport(
     return segments, rows
 
 
-def _battery_status(use_pct: float) -> Dict[str, Any]:
-    remain = round(100 - use_pct, 1)
+def _battery_status(remaining_pct: float) -> Dict[str, Any]:
+    remain = round(remaining_pct, 1)
     if remain <= PARAMS["battery_return_pct"]:
         level = "返航"
     elif remain <= PARAMS["battery_relay_pct"]:
@@ -1110,7 +1110,10 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
             assignments.setdefault(airport.uid, []).append(point)
             route_id = point.group_id
             distance_m, flight_min, work_min, total_min = estimate_sortie(airport, [point])
-            battery_use_pct = round(total_min / airport.drone.battery_life_min * 100, 1)
+            battery_use_pct = round(
+                (flight_min + work_min) / airport.drone.battery_life_min * 100,
+                1,
+            )
             start_offset_min = round(elapsed_min, 1)
             elapsed_min += total_min
             target_rows.append({
@@ -1166,7 +1169,10 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                 route_id = point.group_id
                 single_distance = route_distance_m(airport, [segment])
                 _, flight_min, work_min, total_min = estimate_sortie(airport, [segment])
-                battery_use_pct = round(total_min / airport.drone.battery_life_min * 100, 1)
+                battery_use_pct = round(
+                    (flight_min + work_min) / airport.drone.battery_life_min * 100,
+                    1,
+                )
                 start_offset_min = round(elapsed_min, 1)
                 elapsed_min += total_min
                 target_rows.append(
@@ -1221,7 +1227,10 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
             assignments.setdefault(airport.uid, []).append(point)
             route_id = point.group_id
             distance_m, flight_min, work_min, total_min = estimate_sortie(airport, [point])
-            battery_use_pct = round(total_min / airport.drone.battery_life_min * 100, 1)
+            battery_use_pct = round(
+                (flight_min + work_min) / airport.drone.battery_life_min * 100,
+                1,
+            )
             start_offset_min = round(elapsed_min, 1)
             elapsed_min += total_min
             target_rows.append(
@@ -1299,10 +1308,20 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                 seg_distance_m, seg_flight_min, seg_work_min, _ = estimate_sortie(airport, leg_items)
                 safety_min = max(seg_flight_min * PARAMS["P010_safety_ratio"], PARAMS["P011_safety_fixed_min"])
                 leg_total_min = PARAMS["P040_prepare_min"] + seg_flight_min + seg_work_min + safety_min
-                battery_use_pct = round(leg_total_min / airport.drone.battery_life_min * 100, 1)
-                battery_meta = _battery_status(battery_use_pct)
+                battery_use_pct = round(
+                    (seg_flight_min + seg_work_min) / airport.drone.battery_life_min * 100,
+                    1,
+                )
+                required_battery_pct = (
+                    (seg_flight_min + seg_work_min + safety_min)
+                    / airport.drone.battery_life_min
+                    * 100
+                )
+                battery_meta = _battery_status(
+                    airport.drone.battery_pct - battery_use_pct
+                )
                 feasible = (
-                    battery_use_pct <= airport.drone.battery_pct
+                    required_battery_pct <= airport.drone.battery_pct
                     and leg_total_min <= max_min
                     and battery_meta["remaining_pct"] > PARAMS["battery_return_pct"]
                 )
