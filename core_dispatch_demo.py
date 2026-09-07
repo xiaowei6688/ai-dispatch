@@ -57,7 +57,7 @@ CONFIGURABLE_PARAMS = {
     "P010_safety_ratio": 0.0,
     # P011: 安全冗余固定下限，单位分钟。
     "P011_safety_fixed_min": 3,
-    # P012: 工单接入后最早起飞响应时间，单位分钟。
+    # P012: 工单接入后最早开始准备的响应时间，单位分钟。
     "P012_response_min": 3,
     # P013: 允许抢占的来单等级。
     "P013_preempt_incoming_level": 1,
@@ -1485,7 +1485,7 @@ def build_rule_audit(data: Dict[str, Any]) -> List[Dict[str, str]]:
         {
             "param": "P012",
             "json_fields": "work_order.woker_order_level, start_date",
-            "usage": f"记录响应目标：接入到起飞约{PARAMS['P012_response_min']}min，时间轴按该目标顺排",
+            "usage": f"记录响应目标：接入后约{PARAMS['P012_response_min']}min开始准备，时间轴按该目标顺排",
         },
         {"param": "P013", "json_fields": "current_task_id/current_task, task_priority, task_progress, woker_order_level", "usage": "1级工单仅可抢占未到进度保护线的低优先级任务，不可抢占同为1级的任务"},
         {"param": "P014", "json_fields": "JSON缺任务类型白名单", "usage": "白名单为空，当前不额外限制抢占"},
@@ -2354,8 +2354,8 @@ def build_table_output(result: Dict[str, Any]) -> Dict[str, Any]:
         },
         "schedule_timeline": {
             "index": 4,
-            "name": "起飞时间 / 预计完成时间",
-            "meaning": f"响应锚点顺排（P012，首飞锚点={PARAMS['P012_response_min']}min）",
+            "name": "准备开始时间 / 预计完成时间",
+            "meaning": f"响应锚点顺排（P012，首段准备开始锚点={PARAMS['P012_response_min']}min）",
             "next_step": "方案时间轴",
             "data": [
                 {
@@ -2845,11 +2845,11 @@ def print_summary(result: Dict[str, Any]) -> None:
         print(f"3. 指派结果: {assigned_pairs}")
         timeline_rows = result.get("table_output", {}).get("schedule_timeline", {}).get("data", [])
         print(
-            "4. 起飞时间 / 预计完成时间: "
+            "4. 准备开始时间 / 预计完成时间: "
             + "；".join(
                 f"{row['airport_name']} 架次{row['sortie_index']}-{row['relay_leg']}/{row['relay_legs']} "
                 f"{row['planned_start_time']} -> {row['planned_end_time']}"
-                f"（起飞前恢复等待{row['charge_wait_before_takeoff_min']}min）"
+                f"（准备开始前恢复等待{row['charge_wait_before_takeoff_min']}min）"
                 for row in timeline_rows
             )
         )
@@ -2869,7 +2869,7 @@ def print_summary(result: Dict[str, Any]) -> None:
         print("1. 候选机场集合: -")
         print("2. 合规机场集合: -")
         print("3. 指派结果: -")
-        print("4. 起飞时间 / 预计完成时间: -")
+        print("4. 准备开始时间 / 预计完成时间: -")
         print("5. 航线 route_id: -")
         print("6. 单架次飞行/作业/总时长: -")
         print("7. 三套方案 + 推荐: 见下方方案列表")
@@ -2947,8 +2947,8 @@ def print_summary(result: Dict[str, Any]) -> None:
                     print(
                         f"      第{leg['relay_leg']}段: 准备{leg['prepare_min']}min + 飞行{leg['flight_min']}min "
                         f"+ 作业{leg['work_min']}min + 安全冗余{leg['safety_min']}min = {leg['total_min']}min；"
-                        f"时间{leg.get('planned_start_time', '')} -> {leg.get('planned_end_time', '')}；"
-                        f"起飞前恢复等待{leg.get('charge_wait_before_takeoff_min', 0)}min；"
+                        f"准备开始{leg.get('planned_start_time', '')} -> {leg.get('planned_end_time', '')}；"
+                        f"准备开始前恢复等待{leg.get('charge_wait_before_takeoff_min', 0)}min；"
                         f"本段后恢复完成{leg.get('resource_recovery_end_time', '')}；"
                         f"预计耗电{leg['battery_use_pct']}%，剩余{leg['battery_remaining_pct']}%，"
                         f"状态={leg['battery_level']}"
@@ -2958,8 +2958,8 @@ def print_summary(result: Dict[str, Any]) -> None:
                 print(
                     f"    执行: 准备{first['prepare_min']}min + 飞行{first['flight_min']}min "
                     f"+ 作业{first['work_min']}min + 安全冗余{first['safety_min']}min = {first['total_min']}min；"
-                    f"时间{first.get('planned_start_time', '')} -> {first.get('planned_end_time', '')}；"
-                    f"起飞前恢复等待{first.get('charge_wait_before_takeoff_min', 0)}min；"
+                    f"准备开始{first.get('planned_start_time', '')} -> {first.get('planned_end_time', '')}；"
+                    f"准备开始前恢复等待{first.get('charge_wait_before_takeoff_min', 0)}min；"
                     f"本段后恢复完成{first.get('resource_recovery_end_time', '')}；"
                     f"预计耗电{first['battery_use_pct']}%，剩余{first['battery_remaining_pct']}%，"
                     f"状态={first['battery_level']}"

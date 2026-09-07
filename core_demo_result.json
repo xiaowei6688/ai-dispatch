@@ -10,21 +10,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于任务覆盖范围内，且当前具备可用的无人机资源"
+        "reason": "该机场位于任务覆盖范围内，且当前具备可用的无人机资源。"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于任务覆盖范围内，且当前具备可用的无人机资源"
+        "reason": "该机场位于任务覆盖范围内，且当前具备可用的无人机资源。"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于任务覆盖范围内，且当前具备可用的无人机资源"
+        "reason": "该机场位于任务覆盖范围内，且当前具备可用的无人机资源。"
       }
     ]
   },
@@ -139,8 +139,8 @@
   },
   "schedule_timeline": {
     "index": 4,
-    "name": "起飞时间 / 预计完成时间",
-    "meaning": "响应锚点顺排（P012，首飞锚点=3min）",
+    "name": "准备开始时间 / 预计完成时间",
+    "meaning": "响应锚点顺排（P012，首段准备开始锚点=3min）",
     "next_step": "方案时间轴",
     "data": [
       {
@@ -662,7 +662,7 @@
       {
         "scheme_name": "balanced",
         "scheme_label": "均衡方案",
-        "description": "均衡方案：优先调度覆盖范围内最近的机场，当电量触及30%接力阈值时自动执行拆接力策略。",
+        "description": "均衡方案：优先调度覆盖范围内的最近机场，当电量触及30%接力阈值时自动执行拆接力。",
         "is_recommended": true,
         "status": "success",
         "assigned_target_count": 4,
@@ -2572,7 +2572,7 @@
       {
         "scheme_name": "time_first",
         "scheme_label": "时效优先方案",
-        "description": "该方案侧重减少接力次数并缩短整体完成时间，同时严格保障返航安全。",
+        "description": "该方案侧重减少接力次数并缩短整体完成时间，但需严格确保返航安全。",
         "is_recommended": false,
         "status": "success",
         "assigned_target_count": 4,
@@ -6761,7 +6761,7 @@
     "data": {
       "recommended_scheme": "balanced",
       "recommended_label": "均衡方案",
-      "reason": "该工单为1级/立即执行，推荐优先级依次为：无返航风险、架次少、最长耗时短、电量风险少、总距离短。最终选定均衡方案，状态为success，共8个架次，最长耗时20.9分钟，最低电量余量43.6%，总飞行距离8139.7米。与时效优先方案相比，本方案架次由9减至8，最长耗时由23.7分钟缩短至20.9分钟，预警/接力/返航段由4降至0，总距离8139.7米略高于对方的8091.3米；与电量稳健方案相比，本方案架次由13大幅减少至8，总距离由9731.2米缩短至8139.7米，但最长耗时由16.9分钟增加至20.9分钟。"
+      "reason": "该工单为1级/立即执行，推荐优先级依次为：无返航风险、架次少、最长耗时短、电量风险少、总距离短。最终选定均衡方案（状态=success），共8个架次，最长耗时20.9分钟，最低电量余量43.6%，总飞行距离8139.7米。与时效优先方案相比，本方案架次由9减至8，最长耗时由23.7分钟缩短至20.9分钟，预警/接力/返航段由4段降为0段，总距离由8091.3米微增至8139.7米；与电量稳健方案相比，本方案架次由13大幅减少至8，总距离由9731.2米缩短至8139.7米，但最长耗时由16.9分钟增加至20.9分钟。"
     }
   },
   "infeasible_reason": {
