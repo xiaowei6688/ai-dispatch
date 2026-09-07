@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import math
 import os
@@ -1684,20 +1685,78 @@ def _numeric_tokens(text: str) -> List[str]:
 
 
 def _preserve_numeric_tokens(source: str, candidate: str) -> bool:
-    tokens = _numeric_tokens(source)
-    if not tokens:
-        return True
-    return all(token in candidate for token in tokens)
+    return Counter(_numeric_tokens(source)) == Counter(_numeric_tokens(candidate))
 
 
-def _rewrite_text(client: Any, text: str, context: str, label: str) -> str:
+_PROTECTED_TOKEN_RE = re.compile(r"(?<!\w)[A-Za-z0-9_-]{6,}(?!\w)")
+_CONCLUSION_GROUPS = (
+    ("不可行", "可行", "成功", "失败"),
+    ("不可抢占", "可抢占", "允许", "禁止"),
+    ("返航", "接力", "预警", "正常"),
+)
+
+
+def _conclusion_hits(text: str, group: Tuple[str, ...]) -> Tuple[str, ...]:
+    """Match longer negative/status phrases before their shorter substrings."""
+    hits = []
+    remaining = text or ""
+    for word in sorted(group, key=len, reverse=True):
+        if word in remaining:
+            hits.append(word)
+            remaining = remaining.replace(word, "")
+    return tuple(sorted(hits))
+
+
+def _rewrite_is_safe(source: str, candidate: str) -> bool:
+    """Reject rewrites that alter exact values, identifiers, or decision polarity."""
+    if not candidate or not _preserve_numeric_tokens(source, candidate):
+        return False
+    for token in _PROTECTED_TOKEN_RE.findall(source):
+        if token not in candidate:
+            return False
+    for group in _CONCLUSION_GROUPS:
+        source_hits = _conclusion_hits(source, group)
+        candidate_hits = _conclusion_hits(candidate, group)
+        if source_hits != candidate_hits:
+            return False
+    return True
+
+
+def _llm_facts(item: Any) -> Dict[str, Any]:
+    """Keep prompts factual and small; route geometry is never sent for rewriting."""
+    if not isinstance(item, dict):
+        return {}
+    facts = {}
+    for key, value in item.items():
+        if key in {"reason", "description", "suggestion", "rule", "trigger", "reject_reason"}:
+            continue
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            facts[key] = value
+        elif isinstance(value, list) and all(isinstance(v, (str, int, float, bool)) for v in value):
+            facts[key] = value
+    return facts
+
+
+def _rewrite_text(
+    client: Any,
+    text: str,
+    context: str,
+    label: str,
+    facts: Optional[Dict[str, Any]] = None,
+    cache: Optional[Dict[Tuple[str, str, str, str], str]] = None,
+) -> str:
     if not client or not text:
         return text
+    facts_text = json.dumps(facts or {}, ensure_ascii=False, sort_keys=True)
+    cache_key = (text, context, label, facts_text)
+    if cache is not None and cache_key in cache:
+        return cache[cache_key]
     prompt = (
         f"你是无人机调度结果解释器。请在不改变事实、数字、专有名词和结论方向的前提下，"
         f"把下面这段{label}改写得更自然、更适合业务展示。\n"
         f"要求：只输出改写后的中文，不要解释，不要加前后缀，不要改 JSON 结构。\n"
         f"上下文：{context}\n"
+        f"只读事实（不得新增、推断或修改）：{json.dumps(facts or {}, ensure_ascii=False)}\n"
         f"原文：{text}"
     )
     try:
@@ -1706,9 +1765,16 @@ def _rewrite_text(client: Any, text: str, context: str, label: str) -> str:
         resp = client.invoke([HumanMessage(content=prompt)])
         new_text = _extract_llm_output(resp)
         if not new_text:
+            if cache is not None:
+                cache[cache_key] = text
             return text
-        return new_text if _preserve_numeric_tokens(text, new_text) else text
+        rewritten = new_text if _rewrite_is_safe(text, new_text) else text
+        if cache is not None:
+            cache[cache_key] = rewritten
+        return rewritten
     except Exception:
+        if cache is not None:
+            cache[cache_key] = text
         return text
 
 
@@ -1730,6 +1796,7 @@ def _rewrite_text_items(
             payload.append(
                 {
                     "idx": idx,
+                    "facts": _llm_facts(item),
                     **{field: item.get(field, "") for field in field_names},
                 }
             )
@@ -1737,7 +1804,7 @@ def _rewrite_text_items(
             f"你是无人机调度结果解释器。请只改写下面 JSON 数组中指定字段的中文说明，"
             f"不要改写任何数字、机场名、无人机ID、route_id、状态码，不要新增字段，不要删除字段，"
             f"不要改变条目数量，不要改变 idx。\n"
-            f"输出必须是严格 JSON 数组，每个元素只包含 idx 和原字段。\n"
+            f"输出必须是严格 JSON 数组，每个元素只包含 idx 和原字段，不要输出 facts。\n"
             f"上下文：{context}\n"
             f"字段：{', '.join(field_names)}\n"
             f"数据：{json.dumps(payload, ensure_ascii=False)}"
@@ -1762,7 +1829,7 @@ def _rewrite_text_items(
                 for field in field_names:
                     value = rewritten.get(field)
                     original = str(item.get(field, ""))
-                    if isinstance(value, str) and value.strip() and _preserve_numeric_tokens(original, value):
+                    if isinstance(value, str) and value.strip() and _rewrite_is_safe(original, value):
                         item[field] = value.strip()
         except Exception:
             continue
@@ -1773,12 +1840,15 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
     client = _load_llm_client()
     if not client:
         return result
+    rewrite_cache: Dict[Tuple[str, str, str, str], str] = {}
 
     result["recommendation_reason"] = _rewrite_text(
         client,
         str(result.get("recommendation_reason", "")),
         "整份调度结果的推荐理由",
         "推荐理由",
+        _llm_facts(result.get("summary")),
+        rewrite_cache,
     )
 
     table_output = result.get("table_output") or {}
@@ -1789,6 +1859,8 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
             str(decision_basis.get("reason", "")),
             "最终推荐方案的决策依据",
             "决策依据",
+            _llm_facts(result.get("summary")),
+            rewrite_cache,
         )
 
     candidate_set = table_output.get("candidate_airport_set", {}).get("data", [])
@@ -1820,6 +1892,8 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
                     str(row.get("description", "")),
                     f"方案 {row.get('scheme_label', '')} 的对比说明",
                     "方案说明",
+                    _llm_facts(row),
+                    rewrite_cache,
                 )
 
     infeasible_items = table_output.get("infeasible_reason", {}).get("data", [])
@@ -1832,12 +1906,16 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
                 str(item.get("reason", "")),
                 f"不可行方案 {item.get('scheme_label', '')} 的失败原因",
                 "失败原因",
+                _llm_facts(item),
+                rewrite_cache,
             )
             item["suggestion"] = _rewrite_text(
                 client,
                 str(item.get("suggestion", "")),
                 f"不可行方案 {item.get('scheme_label', '')} 的处理建议",
                 "处理建议",
+                _llm_facts(item),
+                rewrite_cache,
             )
             failed_plans = item.get("failed_plans", [])
             if isinstance(failed_plans, list):
@@ -1858,6 +1936,8 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
                 str(preempt.get("rule", "")),
                 "抢占规则说明",
                 "抢占规则",
+                _llm_facts(preempt),
+                rewrite_cache,
             )
         relay_rows = preempt_relay.get("relay", [])
         if isinstance(relay_rows, list):
@@ -1875,6 +1955,8 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
                 str(cooperation.get("trigger", "")),
                 "协同触发条件说明",
                 "协同触发",
+                    _llm_facts(cooperation),
+                    rewrite_cache,
             )
 
     attempted = result.get("attempted_schemes", [])
@@ -1888,6 +1970,8 @@ def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
                     str(scheme.get("reject_reason", "")),
                     f"策略 {scheme.get('scheme_label', '')} 的筛除原因",
                     "筛除原因",
+                    _llm_facts(scheme),
+                    rewrite_cache,
                 )
 
     result["table_output"] = table_output
