@@ -10,21 +10,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "可覆盖且资源可用"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备可用的调度资源"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "可覆盖且资源可用"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备可用的调度资源"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "可覆盖且资源可用"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备可用的调度资源"
       }
     ]
   },
@@ -39,21 +39,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "可覆盖且资源可用"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备执行任务的可用资源"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "可覆盖且资源可用"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备执行任务的可用资源"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "可覆盖且资源可用"
+        "reason": "该机场位于无人机覆盖范围内，且当前具备执行任务的可用资源"
       }
     ]
   },
@@ -662,7 +662,7 @@
       {
         "scheme_name": "balanced",
         "scheme_label": "均衡方案",
-        "description": "默认方案：优先选覆盖范围内最近机场，触发30%接力阈值时拆接力。",
+        "description": "默认策略：优先调度覆盖范围内的最近机场，当触发30%接力阈值时执行接力拆分。",
         "is_recommended": true,
         "status": "success",
         "assigned_target_count": 4,
@@ -2572,7 +2572,7 @@
       {
         "scheme_name": "time_first",
         "scheme_label": "时效优先方案",
-        "description": "偏向更少接力和更短完成时间，但必须守住返航线。",
+        "description": "该方案以时效为核心，优先保障更短的完成时间与更少的接力次数，同时严格确保返航路径的安全。",
         "is_recommended": false,
         "status": "success",
         "assigned_target_count": 4,
@@ -4555,7 +4555,7 @@
       {
         "scheme_name": "energy_first",
         "scheme_label": "电量稳健方案",
-        "description": "偏向电量余量更安全，尽量保持更高预警线。",
+        "description": "该方案优先保障电量安全，通过维持较高的预警阈值来确保飞行余量充足。",
         "is_recommended": false,
         "status": "success",
         "assigned_target_count": 4,
@@ -6761,7 +6761,7 @@
     "data": {
       "recommended_scheme": "balanced",
       "recommended_label": "均衡方案",
-      "reason": "该工单为1级/立即执行，推荐优先级为：无返航风险 > 架次少 > 最长耗时短 > 电量风险少 > 总距离短。最终选择均衡方案：状态=success，架次=8，最长耗时=20.9min，最低电量余量=30.3%，总距离=8139.7m。相对时效优先方案：架次8比时效优先方案的9更少，最长耗时20.9min vs 23.7min，预警/接力/返航段8 vs 5，总距离8139.7m vs 8091.3m 相对电量稳健方案：架次8比电量稳健方案的13更少，最长耗时20.9min vs 16.9min，预警/接力/返航段8 vs 0，总距离8139.7m vs 9731.2m"
+      "reason": "该工单属于1级/立即执行任务，推荐优先级依次为：无返航风险 > 架次少 > 最长耗时短 > 电量风险少 > 总距离短。最终选定均衡方案（状态=success），具体指标为：架次8次，最长耗时20.9min，最低电量余量30.3%，总距离8139.7m。与时效优先方案相比，本方案架次由9次减至8次，最长耗时由23.7min缩短至20.9min，预警/接力/返航段由5段增至8段，总距离由8091.3m微增至8139.7m；与电量稳健方案相比，本方案架次由13次大幅降至8次，最长耗时由16.9min延长至20.9min，预警/接力/返航段由0段增至8段，总距离由9731.2m显著缩短至8139.7m。"
     }
   },
   "infeasible_reason": {
@@ -6779,7 +6779,7 @@
     "data": {
       "preempt": {
         "enabled": true,
-        "rule": "1级工单可抢占未到进度保护线的执行中任务"
+        "rule": "1级工单具备最高优先级，可抢占尚未达到进度保护线的执行中任务。"
       },
       "relay": [
         {
@@ -6790,7 +6790,7 @@
           "sortie_index": 1,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "完整执行约35.8min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.8min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6801,7 +6801,7 @@
           "sortie_index": 1,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "完整执行约35.8min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.8min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6812,7 +6812,7 @@
           "sortie_index": 2,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "完整执行约35.7min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.7min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6823,7 +6823,7 @@
           "sortie_index": 2,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "完整执行约35.7min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.7min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6834,7 +6834,7 @@
           "sortie_index": 1,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "完整执行约35.9min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.9min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6845,7 +6845,7 @@
           "sortie_index": 1,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "完整执行约35.9min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.9min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6856,7 +6856,7 @@
           "sortie_index": 1,
           "relay_leg": 1,
           "relay_legs": 2,
-          "reason": "完整执行约35.4min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.4min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         },
         {
@@ -6867,13 +6867,13 @@
           "sortie_index": 1,
           "relay_leg": 2,
           "relay_legs": 2,
-          "reason": "完整执行约35.4min，超过本方案单段安全上限21.0min；按真实往返航程优化为2段，每段返航后再接续。",
+          "reason": "全程耗时约35.4min，超出单段21.0min的安全阈值；依据实际往返距离拆分为2个航段，执行完一段返航后由下一段接续。",
           "charging_duration_min": 30.0
         }
       ],
       "cooperation": {
         "enabled": true,
-        "trigger": "对象数>=2触发多机场/多机协同评估",
+        "trigger": "当涉及对象数量达到2个及以上时，系统将自动启动多机场或多机协同评估流程。",
         "used_airport_count": 3,
         "is_multi_airport": true
       }

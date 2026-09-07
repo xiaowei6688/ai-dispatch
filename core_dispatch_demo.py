@@ -4,6 +4,7 @@ import argparse
 import json
 import math
 import os
+import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -1611,6 +1612,254 @@ def build_work_order_summary(data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _load_llm_client():
+    try:
+        from llm import llm_client
+    except Exception:
+        return None
+    return llm_client
+
+
+def _llm_text(content: Any) -> str:
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content.strip()
+    return str(content).strip()
+
+
+def _extract_llm_output(resp: Any) -> str:
+    if resp is None:
+        return ""
+    text = getattr(resp, "content", None)
+    if text is None:
+        text = str(resp)
+    text = _llm_text(text)
+    if text.startswith("```"):
+        lines = text.splitlines()
+        if len(lines) >= 3:
+            text = "\n".join(lines[1:-1]).strip()
+    return text
+
+
+_NUMERIC_TOKEN_RE = re.compile(r"\d+(?:\.\d+)?")
+
+
+def _numeric_tokens(text: str) -> List[str]:
+    return _NUMERIC_TOKEN_RE.findall(text or "")
+
+
+def _preserve_numeric_tokens(source: str, candidate: str) -> bool:
+    tokens = _numeric_tokens(source)
+    if not tokens:
+        return True
+    return all(token in candidate for token in tokens)
+
+
+def _rewrite_text(client: Any, text: str, context: str, label: str) -> str:
+    if not client or not text:
+        return text
+    prompt = (
+        f"你是无人机调度结果解释器。请在不改变事实、数字、专有名词和结论方向的前提下，"
+        f"把下面这段{label}改写得更自然、更适合业务展示。\n"
+        f"要求：只输出改写后的中文，不要解释，不要加前后缀，不要改 JSON 结构。\n"
+        f"上下文：{context}\n"
+        f"原文：{text}"
+    )
+    try:
+        from langchain_core.messages import HumanMessage
+
+        resp = client.invoke([HumanMessage(content=prompt)])
+        new_text = _extract_llm_output(resp)
+        if not new_text:
+            return text
+        return new_text if _preserve_numeric_tokens(text, new_text) else text
+    except Exception:
+        return text
+
+
+def _rewrite_text_items(
+    client: Any,
+    items: List[Dict[str, Any]],
+    field_names: Tuple[str, ...],
+    context: str,
+    label: str,
+    batch_size: int = 12,
+) -> List[Dict[str, Any]]:
+    if not client or not items:
+        return items
+    updated = [dict(item) for item in items]
+    for start in range(0, len(updated), batch_size):
+        batch = updated[start:start + batch_size]
+        payload = []
+        for idx, item in enumerate(batch):
+            payload.append(
+                {
+                    "idx": idx,
+                    **{field: item.get(field, "") for field in field_names},
+                }
+            )
+        prompt = (
+            f"你是无人机调度结果解释器。请只改写下面 JSON 数组中指定字段的中文说明，"
+            f"不要改写任何数字、机场名、无人机ID、route_id、状态码，不要新增字段，不要删除字段，"
+            f"不要改变条目数量，不要改变 idx。\n"
+            f"输出必须是严格 JSON 数组，每个元素只包含 idx 和原字段。\n"
+            f"上下文：{context}\n"
+            f"字段：{', '.join(field_names)}\n"
+            f"数据：{json.dumps(payload, ensure_ascii=False)}"
+        )
+        try:
+            from langchain_core.messages import HumanMessage
+
+            resp = client.invoke([HumanMessage(content=prompt)])
+            raw = _extract_llm_output(resp)
+            parsed = json.loads(raw)
+            if not isinstance(parsed, list):
+                continue
+            parsed_map = {
+                row.get("idx"): row
+                for row in parsed
+                if isinstance(row, dict) and "idx" in row
+            }
+            for idx, item in enumerate(batch):
+                rewritten = parsed_map.get(idx)
+                if not isinstance(rewritten, dict):
+                    continue
+                for field in field_names:
+                    value = rewritten.get(field)
+                    original = str(item.get(field, ""))
+                    if isinstance(value, str) and value.strip() and _preserve_numeric_tokens(original, value):
+                        item[field] = value.strip()
+        except Exception:
+            continue
+    return updated
+
+
+def enrich_result_with_llm(result: Dict[str, Any]) -> Dict[str, Any]:
+    client = _load_llm_client()
+    if not client:
+        return result
+
+    result["recommendation_reason"] = _rewrite_text(
+        client,
+        str(result.get("recommendation_reason", "")),
+        "整份调度结果的推荐理由",
+        "推荐理由",
+    )
+
+    table_output = result.get("table_output") or {}
+    decision_basis = table_output.get("decision_basis", {}).get("data", {})
+    if isinstance(decision_basis, dict):
+        decision_basis["reason"] = _rewrite_text(
+            client,
+            str(decision_basis.get("reason", "")),
+            "最终推荐方案的决策依据",
+            "决策依据",
+        )
+
+    candidate_set = table_output.get("candidate_airport_set", {}).get("data", [])
+    if isinstance(candidate_set, list):
+        table_output["candidate_airport_set"]["data"] = _rewrite_text_items(
+            client,
+            candidate_set,
+            ("reason",),
+            "候选机场集合中的每条候选说明",
+            "候选机场说明",
+        )
+
+    compliant_set = table_output.get("compliant_airport_set", {}).get("data", [])
+    if isinstance(compliant_set, list):
+        table_output["compliant_airport_set"]["data"] = _rewrite_text_items(
+            client,
+            compliant_set,
+            ("reason",),
+            "合规机场集合中的每条合规说明",
+            "合规机场说明",
+        )
+
+    scheme_options = table_output.get("scheme_options", {}).get("data", [])
+    if isinstance(scheme_options, list):
+        for row in scheme_options:
+            if isinstance(row, dict):
+                row["description"] = _rewrite_text(
+                    client,
+                    str(row.get("description", "")),
+                    f"方案 {row.get('scheme_label', '')} 的对比说明",
+                    "方案说明",
+                )
+
+    infeasible_items = table_output.get("infeasible_reason", {}).get("data", [])
+    if isinstance(infeasible_items, list):
+        for item in infeasible_items:
+            if not isinstance(item, dict):
+                continue
+            item["reason"] = _rewrite_text(
+                client,
+                str(item.get("reason", "")),
+                f"不可行方案 {item.get('scheme_label', '')} 的失败原因",
+                "失败原因",
+            )
+            item["suggestion"] = _rewrite_text(
+                client,
+                str(item.get("suggestion", "")),
+                f"不可行方案 {item.get('scheme_label', '')} 的处理建议",
+                "处理建议",
+            )
+            failed_plans = item.get("failed_plans", [])
+            if isinstance(failed_plans, list):
+                item["failed_plans"] = _rewrite_text_items(
+                    client,
+                    failed_plans,
+                    ("reason",),
+                    f"不可行方案 {item.get('scheme_label', '')} 的失败段说明",
+                    "失败段说明",
+                )
+
+    preempt_relay = table_output.get("preempt_relay_cooperation", {}).get("data", {})
+    if isinstance(preempt_relay, dict):
+        preempt = preempt_relay.get("preempt", {})
+        if isinstance(preempt, dict):
+            preempt["rule"] = _rewrite_text(
+                client,
+                str(preempt.get("rule", "")),
+                "抢占规则说明",
+                "抢占规则",
+            )
+        relay_rows = preempt_relay.get("relay", [])
+        if isinstance(relay_rows, list):
+            preempt_relay["relay"] = _rewrite_text_items(
+                client,
+                relay_rows,
+                ("reason",),
+                "接力决策说明",
+                "接力说明",
+            )
+        cooperation = preempt_relay.get("cooperation", {})
+        if isinstance(cooperation, dict):
+            cooperation["trigger"] = _rewrite_text(
+                client,
+                str(cooperation.get("trigger", "")),
+                "协同触发条件说明",
+                "协同触发",
+            )
+
+    attempted = result.get("attempted_schemes", [])
+    if isinstance(attempted, list):
+        for scheme in attempted:
+            if not isinstance(scheme, dict):
+                continue
+            if "reject_reason" in scheme:
+                scheme["reject_reason"] = _rewrite_text(
+                    client,
+                    str(scheme.get("reject_reason", "")),
+                    f"策略 {scheme.get('scheme_label', '')} 的筛除原因",
+                    "筛除原因",
+                )
+
+    result["table_output"] = table_output
+    return result
+
+
 def _join_names(items: List[Dict[str, Any]], key: str = "name") -> str:
     names = []
     for item in items:
@@ -2643,10 +2892,13 @@ def main() -> None:
     parser.add_argument("--input", default=DEFAULT_INPUT, help="Path to 无人机调度结构.json")
     parser.add_argument("--output", default=DEFAULT_OUTPUT, help="Path to write result JSON")
     parser.add_argument("--no-output", action="store_true", help="Only print summary")
+    parser.add_argument("--llm-explain", action="store_true", help="Rewrite explanation fields with the LLM")
     args = parser.parse_args()
 
     data = load_structure(args.input)
     result = solve(data)
+    if args.llm_explain:
+        result = enrich_result_with_llm(result)
     print_summary(result)
 
     if not args.no_output:
