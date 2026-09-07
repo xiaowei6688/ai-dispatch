@@ -35,7 +35,7 @@
 			"airport_status": 0,
 			"airport_need_check": 0,
 			"airport_cross_railway": 0,
-			"current_task": "",  // 当前执行的任务
+			"current_task_id": "",  // 当前执行的任务
 			"task_progress": 0,  // 当前任务进度
 			"task_priority": 2, // 当前任务优先级
 			"external_temperature": "-40~+80℃",  // 机场外部温度
@@ -62,7 +62,7 @@
 			"airport_status": 0,
 			"airport_need_check": 0,
 			"airport_cross_railway": 0,
-			"current_task": "",  // 当前执行的任务
+			"current_task_id": "",  // 当前执行的任务
 			"task_progress": 0,  // 当前任务进度
 			"task_priority": 2, // 当前任务优先级
 			"external_temperature": "-40~+80℃",  // 机场外部温度

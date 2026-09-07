@@ -46,8 +46,6 @@ CONFIGURABLE_PARAMS = {
     "P006_min_battery_temp_pct": 60,
     # P006: 周期工单起飞最低电量百分比。
     "P006_min_battery_periodic_pct": 85,
-    # P007: 文档基准单架次上限比例；各方案可在此基础上采用更保守阈值。
-    "P007_max_sortie_ratio": 0.80,
     # P008: 机场状态等于该值时视为可用。
     "P008_ready_airport_status": 0,
     # P008/P018: 无人机状态等于该值时视为待机可用。
@@ -147,6 +145,7 @@ class Airport:
     wind_speed_mps: Optional[float]
     rainfall_mm_min: Optional[float]
     current_task_id: str
+    task_priority: Optional[int]
     task_progress: float
     drone: Drone
     weather: List[Dict[str, Any]]
@@ -331,6 +330,11 @@ def parse_airports(data: Dict[str, Any]) -> List[Airport]:
                 wind_speed_mps=parse_float_or_none(raw.get("wind_speed")),
                 rainfall_mm_min=parse_float_or_none(raw.get("rainfall")),
                 current_task_id=str(raw.get("current_task_id") or raw.get("current_task") or ""),
+                task_priority=(
+                    int(raw.get("task_priority"))
+                    if raw.get("task_priority") not in (None, "")
+                    else None
+                ),
                 task_progress=float(raw.get("task_progress", 0) or 0),
                 drone=drone,
                 weather=airport_weather,
@@ -496,14 +500,26 @@ def airport_ready(airport: Airport, date_str: Optional[str], work_order: Dict[st
         reasons.append(f"P006 起飞电量{airport.drone.battery_pct}% < {threshold}%")
         hard_block = True
     if airport.current_task_id:
-        if level == PARAMS["P013_preempt_incoming_level"] and airport.task_progress < PARAMS["P013_preempt_progress_guard_pct"]:
+        incoming_level = PARAMS["P013_preempt_incoming_level"]
+        current_priority = airport.task_priority
+        can_preempt = (
+            level == incoming_level
+            and current_priority is not None
+            and current_priority > level
+            and airport.task_progress < PARAMS["P013_preempt_progress_guard_pct"]
+        )
+        if can_preempt:
             reasons.append(
-                f"P013 可抢占当前任务{airport.current_task_id}：进度{airport.task_progress}%"
+                f"P013 1级工单可抢占低优先级当前任务{airport.current_task_id}"
+                f"（当前优先级{current_priority}，进度{airport.task_progress}%）"
             )
         else:
             reasons.append(
-                f"P013 当前任务{airport.current_task_id}不可抢占或进度受保护：进度{airport.task_progress}%"
+                f"P013 当前任务{airport.current_task_id}不可抢占："
+                f"当前优先级{current_priority if current_priority is not None else '缺失'}，"
+                f"新工单优先级{level}，进度{airport.task_progress}%"
             )
+            hard_block = True
     if airport.cross_railway:
         reasons.append("跨铁路机场：纳入风险提示，核心demo不做硬否决")
     ok_w, weather_msgs = weather_ok(airport, date_str, work_order)
@@ -1439,9 +1455,8 @@ def build_rule_audit(data: Dict[str, Any]) -> List[Dict[str, str]]:
             "param": "P007",
             "json_fields": "drone.battery_life, 航线距离, 作业时长, 安全冗余",
             "usage": (
-                f"单架次时长按方案限制在满电续航的"
-                f"{int(PARAMS['P007_max_sortie_ratio'] * 100)}%以内，"
-                f"三套方案分别使用返航/接力/预警线"
+                "单架次总时长不得超过无人机台账满电续航；"
+                "当前台账为0.5h（30min），三套方案可按返航/接力/预警线采用更保守上限"
             ),
         },
         {"param": "P008", "json_fields": "airport_status, drone.drone_status", "usage": "机场正常且无人机待机才可调度"},
@@ -1452,7 +1467,7 @@ def build_rule_audit(data: Dict[str, Any]) -> List[Dict[str, str]]:
             "json_fields": "work_order.woker_order_level, start_date",
             "usage": f"记录响应目标：接入到起飞约{PARAMS['P012_response_min']}min，时间轴按该目标顺排",
         },
-        {"param": "P013", "json_fields": "current_task_id/current_task, task_progress, woker_order_level", "usage": "1级工单可抢占未到进度保护线的执行中任务"},
+        {"param": "P013", "json_fields": "current_task_id/current_task, task_priority, task_progress, woker_order_level", "usage": "1级工单仅可抢占未到进度保护线的低优先级任务，不可抢占同为1级的任务"},
         {"param": "P014", "json_fields": "JSON缺任务类型白名单", "usage": "白名单为空，当前不额外限制抢占"},
         {"param": "P015", "json_fields": "woker_order_level, woker_order_execution", "usage": "1级偏自动推荐，2-3级可人工确认，4级偏排班"},
         {"param": "P028", "json_fields": "woder_order_detail[].obj_data[].lon/lat", "usage": "线路航点跨度用于协同拆分评估"},
@@ -2312,7 +2327,7 @@ def build_table_output(result: Dict[str, Any]) -> Dict[str, Any]:
             "data": {
                 "preempt": {
                     "enabled": int(result["work_order"]["level"] or 4) == PARAMS["P013_preempt_incoming_level"],
-                    "rule": "1级工单可抢占未到进度保护线的执行中任务",
+                    "rule": "1级工单仅可抢占未到进度保护线的低优先级任务，不可抢占同为1级的任务",
                 },
                 "relay": relay_rows,
                 "cooperation": {
