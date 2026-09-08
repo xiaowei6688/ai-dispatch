@@ -10,21 +10,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于候选集合中，其覆盖范围能够触及目标对象的部分航点。"
+        "reason": "该机场位于任务区域附近，其作业范围能够触及目标对象的部分关键航点，具备执行部分巡检任务的地理条件。"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于候选集合中，其覆盖范围能够触及目标对象的部分航点。"
+        "reason": "基于位置分析，此机场的覆盖半径足以包含目标对象中的若干航点，可作为候选起飞点进行局部覆盖。"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场位于候选集合中，其覆盖范围能够触及目标对象的部分航点。"
+        "reason": "该机场与目标对象的空间关系良好，其有效作业范围可延伸至对象的部分航点，满足部分覆盖要求。"
       }
     ]
   },
@@ -39,21 +39,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场的覆盖范围包含目标对象的部分航点"
+        "reason": "该机场的覆盖范围能够包含目标对象的部分航点"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场的覆盖范围包含目标对象的部分航点"
+        "reason": "该机场的覆盖范围能够包含目标对象的部分航点"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场的覆盖范围包含目标对象的部分航点"
+        "reason": "该机场的覆盖范围能够包含目标对象的部分航点"
       }
     ]
   },
@@ -2078,7 +2078,7 @@
       {
         "scheme_name": "time_first",
         "scheme_label": "时效优先方案",
-        "description": "该方案在确保返航安全的前提下，通过减少接力次数来缩短整体完成时间。",
+        "description": "该方案优先保障任务时效，通过优化航线规划实现更短的完成时间并减少中转接力次数，同时严格确保所有无人机在返航时保留充足电量。",
         "is_recommended": true,
         "status": "success",
         "assigned_target_count": 4,
@@ -3831,7 +3831,7 @@
         "scheme_name": "energy_first",
         "scheme_label": "电量稳健方案",
         "status": "success",
-        "reason": "该方案与已生成方案的机场分配、接力段及关键执行指标完全一致，因此被判定为重复方案并予以过滤。",
+        "reason": "该方案与已生成方案的机场分配、接力段及关键执行指标完全一致，因此被识别为重复方案并予以过滤。",
         "failed_plans": [],
         "unassigned": [],
         "suggestion": "检查覆盖半径、机场/无人机状态、气象阈值和电量阈值；必要时进入延期池或人工改派。"
