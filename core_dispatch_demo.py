@@ -76,7 +76,7 @@ CONFIGURABLE_PARAMS = {
     # P038: JSON缺失drone.drone_vertical时使用的默认飞行速度，单位 m/s。
     "P038_default_speed_mps": 15,
     # P039: 单个航点默认作业时长，单位秒。
-    "P039_work_sec_per_waypoint": 3,
+    "P039_work_sec_per_waypoint": 10,
     # P040: 起飞前准备时长，单位分钟。
     "P040_prepare_min": 1,
     # P041: 是否启用 airport.inspection_radius 做覆盖预筛。
