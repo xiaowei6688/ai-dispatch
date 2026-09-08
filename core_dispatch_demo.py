@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 from collections import Counter
 import json
 import math
@@ -161,6 +162,7 @@ class TargetPoint:
     lat: float
     altitude: float
     route_points: List[Dict[str, Any]]
+    raw_route_points: List[Dict[str, Any]]
 
 
 @dataclass
@@ -169,6 +171,7 @@ class WorkSegment:
     group_name: str
     airport_uid: str
     route_points: List[Dict[str, Any]]
+    raw_route_points: List[Dict[str, Any]]
     full_waypoint_count: int = 0
     segment_index: int = 1
     segment_count: int = 1
@@ -350,7 +353,7 @@ def parse_targets(data: Dict[str, Any]) -> List[TargetPoint]:
     for group in work_order.get("woder_order_detail", []):
         group_id = str(group.get("obj_id", ""))
         group_name = str(group.get("obj_name", ""))
-        raw_route_points = list(group.get("obj_data", []))
+        raw_route_points = [copy.deepcopy(raw) for raw in group.get("obj_data", [])]
         route_points = [
             {
                 "index": raw.get("index", point_index),
@@ -374,6 +377,7 @@ def parse_targets(data: Dict[str, Any]) -> List[TargetPoint]:
                 lat=lat,
                 altitude=altitude,
                 route_points=route_points,
+                raw_route_points=raw_route_points,
             )
         )
     return points
@@ -777,6 +781,7 @@ def optimize_sortie_partition(
 
 def split_item_by_waypoints_for_relay(item: Any, relay_legs: int, airport_uid: str) -> List[WorkSegment]:
     route_points = list(getattr(item, "route_points", []) or [])
+    raw_route_points = list(getattr(item, "raw_route_points", []) or [])
     total = len(route_points)
     if relay_legs <= 1 or total <= 1:
         if isinstance(item, WorkSegment):
@@ -790,6 +795,7 @@ def split_item_by_waypoints_for_relay(item: Any, relay_legs: int, airport_uid: s
                 item.group_name,
                 airport_uid,
                 route_points,
+                raw_route_points,
                 full_waypoint_count=total,
                 segment_index=1,
                 segment_count=1,
@@ -801,6 +807,7 @@ def split_item_by_waypoints_for_relay(item: Any, relay_legs: int, airport_uid: s
         start = idx * chunk_size
         end = min(start + chunk_size, total)
         chunk = route_points[start:end]
+        raw_chunk = raw_route_points[start:end]
         if not chunk:
             continue
         chunks.append(
@@ -809,6 +816,7 @@ def split_item_by_waypoints_for_relay(item: Any, relay_legs: int, airport_uid: s
                 item.group_name,
                 airport_uid,
                 chunk,
+                raw_chunk,
                 full_waypoint_count=total,
                 segment_index=idx + 1,
                 segment_count=relay_legs,
@@ -824,6 +832,7 @@ def optimize_relay_segments(
 ) -> List[WorkSegment]:
     """按真实往返航程寻找满足续航硬约束的最少连续航点分段。"""
     route_points = list(getattr(item, "route_points", []) or [])
+    raw_route_points = list(getattr(item, "raw_route_points", []) or [])
     total = len(route_points)
     if not route_points:
         return []
@@ -840,6 +849,7 @@ def optimize_relay_segments(
                 item.group_name,
                 airport.uid,
                 route_points[start:end],
+                raw_route_points[start:end],
                 full_waypoint_count=total,
             )
             _, _, _, duration = estimate_sortie(airport, [segment])
@@ -861,6 +871,7 @@ def optimize_relay_segments(
             item.group_name,
             airport.uid,
             route_points,
+            raw_route_points,
             full_waypoint_count=total,
         )]
     ranges = []
@@ -877,6 +888,7 @@ def optimize_relay_segments(
             item.group_name,
             airport.uid,
             route_points[start:end],
+            raw_route_points[start:end],
             full_waypoint_count=total,
             segment_index=index,
             segment_count=segment_count,
@@ -1036,8 +1048,8 @@ def split_object_by_airport(
     if not ready_airports:
         return [], rows
 
-    buckets: Dict[str, List[Dict[str, Any]]] = {}
-    for raw in point.route_points:
+    buckets: Dict[str, List[Tuple[Dict[str, Any], Dict[str, Any]]]] = {}
+    for point_index, raw in enumerate(point.route_points):
         feasible = [
             a for a in ready_airports
             if _route_point_distance_to_airport(a, raw) <= a.radius_m
@@ -1050,14 +1062,16 @@ def split_object_by_airport(
             chosen = min(feasible, key=lambda a: (_route_point_distance_to_airport(a, raw) / a.drone.battery_life_min, _route_point_distance_to_airport(a, raw)))
         else:
             chosen = min(feasible, key=lambda a: _route_point_distance_to_airport(a, raw))
-        buckets.setdefault(chosen.uid, []).append(raw)
+        original_raw = point.raw_route_points[point_index] if point_index < len(point.raw_route_points) else raw
+        buckets.setdefault(chosen.uid, []).append((raw, original_raw))
 
     segments = [
         WorkSegment(
             point.group_id,
             point.group_name,
             airport_uid,
-            route_points,
+            [route_point for route_point, _ in route_points],
+            [copy.deepcopy(raw_point) for _, raw_point in route_points],
             full_waypoint_count=len(point.route_points),
         )
         for airport_uid, route_points in buckets.items()
@@ -1364,6 +1378,7 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                                 "first_waypoint": item.route_points[0].get("index") if item.route_points else "",
                                 "last_waypoint": item.route_points[-1].get("index") if item.route_points else "",
                                 "waypoints": item.route_points,
+                                "raw_waypoints": [copy.deepcopy(point) for point in item.raw_route_points],
                             }
                             for item in leg_items
                         ],
@@ -2094,44 +2109,8 @@ def _route_rows_for_scheme(scheme: Dict[str, Any]) -> List[Dict[str, Any]]:
     rows = []
     for plan in scheme.get("plans", []):
         for route in plan.get("route", []):
-            waypoints = []
-            for index, point in enumerate(route.get("waypoints", []), start=1):
-                waypoints.append(
-                    {
-                        "seq": index,
-                        "name": point.get("name"),
-                        "lon": point.get("lon"),
-                        "lat": point.get("lat"),
-                        "altitude": point.get("altitude"),
-                    }
-                )
-            flight_path = [
-                {
-                    "seq": 0,
-                    "type": "takeoff_airport",
-                    "name": plan.get("airport_name"),
-                    "airport_uid": plan.get("airport_uid"),
-                }
-            ]
-            flight_path.extend(
-                {
-                    "seq": wp["seq"],
-                    "type": "waypoint",
-                    "name": wp["name"],
-                    "lon": wp["lon"],
-                    "lat": wp["lat"],
-                    "altitude": wp["altitude"],
-                }
-                for wp in waypoints
-            )
-            flight_path.append(
-                {
-                    "seq": len(waypoints) + 1,
-                    "type": "return_airport",
-                    "name": plan.get("airport_name"),
-                    "airport_uid": plan.get("airport_uid"),
-                }
-            )
+            waypoints = list(route.get("waypoints", []))
+            flight_path = [copy.deepcopy(point) for point in route.get("raw_waypoints", waypoints)]
             rows.append(
                 {
                     "route_id": route.get("obj_id"),
@@ -2160,7 +2139,7 @@ def _route_rows_for_scheme(scheme: Dict[str, Any]) -> List[Dict[str, Any]]:
                     "last_waypoint": route.get("last_waypoint"),
                     "waypoints": waypoints,
                     "flight_path": flight_path,
-                    "flight_rule": "从机场起飞，按waypoints顺序巡检，完成本接力段后返航；如relay_legs>1，则返航后换电/充电再执行下一接力段。",
+                    "flight_rule": "按规划后的obj_data航点顺序巡检；flight_path保留原始航点结构，完成本接力段后返航。",
                 }
             )
     return rows
@@ -2408,7 +2387,7 @@ def build_table_output(result: Dict[str, Any]) -> Dict[str, Any]:
         },
         "scheme_options": {
             "index": 7,
-            "name": "三套方案 + 推荐",
+            "name": "生成方案 + 推荐",
             "meaning": "时效最优 / 资源最优 / 稳健均衡",
             "next_step": "人工确认",
             "data": _scheme_option_rows(result.get("schemes", []), recommended),
@@ -2767,6 +2746,8 @@ def empty_summary(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def solve(data: Dict[str, Any]) -> Dict[str, Any]:
+    PARAMS.clear()
+    PARAMS.update(CONFIGURABLE_PARAMS)
     apply_runtime_params(data)
     work_order = data.get("work_order", {})
     schemes, attempted_schemes = generate_schemes(data)

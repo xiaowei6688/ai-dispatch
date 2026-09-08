@@ -141,6 +141,19 @@
 
 这套实现采用“规则 + 优化 + 启发式”的混合方式：安全与可行性由规则负责，均衡方案的机场分配使用内置的全局离散分配优化，航线使用 2-opt 局部改进；它仍然不是保证数学全局最优的完整 MILP/VRP 求解器。
 
+## FastAPI 服务
+
+启动：
+
+```bash
+uv run uvicorn main:app --reload
+```
+
+接口：
+
+- `GET /`：健康检查
+- `POST /dispatch`：直接提交 `无人机调度结构.json` 同结构的 JSON，请求体会被计算为 `core_demo_result.json` 那种输出结构，默认会走大模型润色
+
 ### 8.1 优化器开关
 
 可在 `dispatch_params`、`baseline_params`、`params` 或 `work_order.dispatch_params` 中设置：
