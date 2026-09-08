@@ -39,21 +39,21 @@
         "airport_name": "测试机场-实飞A",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场的覆盖范围能够包含目标对象的部分航点"
+        "reason": "该机场的覆盖范围包含目标对象的部分航点"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2ce",
         "airport_name": "测试机场-实飞B",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场的覆盖范围能够包含目标对象的部分航点"
+        "reason": "该机场的覆盖范围包含目标对象的部分航点"
       },
       {
         "airport_uid": "bc9b8fa733b740cda9c4355e4f6ff2cd",
         "airport_name": "测试机场-实飞C",
         "inspection_radius_m": null,
         "distance_m": null,
-        "reason": "该机场的覆盖范围能够包含目标对象的部分航点"
+        "reason": "该机场的覆盖范围包含目标对象的部分航点"
       }
     ]
   },
@@ -173,8 +173,8 @@
           "343108096710672392"
         ],
         "inspected_object_count": 2,
-        "segment_start_waypoint": "向荣路_001_塔",
-        "segment_end_waypoint": "梅兰东路_022_杆",
+        "segment_start_waypoint": 0,
+        "segment_end_waypoint": 21,
         "planned_takeoff_offset_min": 3.0,
         "planned_finish_offset_min": 13.9,
         "charge_wait_before_takeoff_min": 0.0,
@@ -197,8 +197,8 @@
           "367642289935221019"
         ],
         "inspected_object_count": 1,
-        "segment_start_waypoint": "向荣一号_001_塔",
-        "segment_end_waypoint": "向荣一号_023_节点",
+        "segment_start_waypoint": 0,
+        "segment_end_waypoint": 22,
         "planned_takeoff_offset_min": 3.0,
         "planned_finish_offset_min": 12.8,
         "charge_wait_before_takeoff_min": 0.0,
@@ -222,8 +222,8 @@
           "343108096710672392"
         ],
         "inspected_object_count": 2,
-        "segment_start_waypoint": "总部基地_001_塔",
-        "segment_end_waypoint": "梅兰东路_023_节点",
+        "segment_start_waypoint": 0,
+        "segment_end_waypoint": 22,
         "planned_takeoff_offset_min": 3.0,
         "planned_finish_offset_min": 16.4,
         "charge_wait_before_takeoff_min": 0.0,
@@ -308,8 +308,8 @@
         "feasible": true,
         "segment_index": 1,
         "segment_count": 1,
-        "segment_start_waypoint": "向荣路_001_塔",
-        "segment_end_waypoint": "梅兰东路_022_杆",
+        "segment_start_waypoint": 0,
+        "segment_end_waypoint": 21,
         "inspected_object_count": 2,
         "planned_takeoff_offset_min": 3.0,
         "planned_finish_offset_min": 13.9,
@@ -342,8 +342,8 @@
         "feasible": true,
         "segment_index": 1,
         "segment_count": 1,
-        "segment_start_waypoint": "向荣一号_001_塔",
-        "segment_end_waypoint": "向荣一号_023_节点",
+        "segment_start_waypoint": 0,
+        "segment_end_waypoint": 22,
         "inspected_object_count": 1,
         "planned_takeoff_offset_min": 3.0,
         "planned_finish_offset_min": 12.8,
@@ -377,8 +377,8 @@
         "feasible": true,
         "segment_index": 1,
         "segment_count": 1,
-        "segment_start_waypoint": "总部基地_001_塔",
-        "segment_end_waypoint": "梅兰东路_023_节点",
+        "segment_start_waypoint": 0,
+        "segment_end_waypoint": 22,
         "inspected_object_count": 2,
         "planned_takeoff_offset_min": 3.0,
         "planned_finish_offset_min": 16.4,
@@ -401,7 +401,7 @@
       {
         "scheme_name": "balanced",
         "scheme_label": "均衡方案",
-        "description": "均衡方案：优先调度覆盖范围内的最近机场，当电量触及30%接力阈值时自动拆分任务进行接力。",
+        "description": "均衡方案：优先调度覆盖范围内最近的机场，当电量触及30%接力阈值时自动拆分任务进行接力。",
         "is_recommended": false,
         "status": "success",
         "assigned_target_count": 4,
@@ -440,8 +440,8 @@
                 "segment_count": 1,
                 "route_id": "360590073894273081",
                 "route_name": "向荣路主次干道",
-                "start_waypoint": "向荣路_001_塔",
-                "end_waypoint": "向荣路_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               },
               {
@@ -451,8 +451,8 @@
                 "segment_count": 1,
                 "route_id": "343108096710672392",
                 "route_name": "梅兰东路",
-                "start_waypoint": "梅兰东路_001_塔",
-                "end_waypoint": "梅兰东路_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               }
             ]
@@ -481,8 +481,8 @@
                 "segment_count": 1,
                 "route_id": "367642289935221019",
                 "route_name": "向荣一号",
-                "start_waypoint": "向荣一号_001_塔",
-                "end_waypoint": "向荣一号_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               }
             ]
@@ -511,8 +511,8 @@
                 "segment_count": 1,
                 "route_id": "363089611716558925",
                 "route_name": "总部基地区域",
-                "start_waypoint": "总部基地_001_塔",
-                "end_waypoint": "总部基地_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               }
             ]
@@ -539,169 +539,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "向荣路_001_塔",
-            "segment_end_waypoint": "梅兰东路_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 23,
-            "first_waypoint": "向荣路_001_塔",
-            "last_waypoint": "向荣路_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "向荣路_001_塔",
+                "name": null,
                 "lon": 118.8245661517,
                 "lat": 31.9363580036,
                 "altitude": 32.106176
               },
               {
                 "seq": 2,
-                "name": "向荣路_002_杆",
+                "name": null,
                 "lon": 118.8248966152,
                 "lat": 31.936021319,
                 "altitude": 31.143762
               },
               {
                 "seq": 3,
-                "name": "向荣路_003_节点",
+                "name": null,
                 "lon": 118.8246266254,
                 "lat": 31.9361479447,
                 "altitude": 30.554002
               },
               {
                 "seq": 4,
-                "name": "向荣路_004_航点",
+                "name": null,
                 "lon": 118.8245313139,
                 "lat": 31.9354931885,
                 "altitude": 30.861551
               },
               {
                 "seq": 5,
-                "name": "向荣路_005_塔",
+                "name": null,
                 "lon": 118.8244996078,
                 "lat": 31.9354429081,
                 "altitude": 31.970915
               },
               {
                 "seq": 6,
-                "name": "向荣路_006_杆",
+                "name": null,
                 "lon": 118.8245588151,
                 "lat": 31.9349737226,
                 "altitude": 32.27006
               },
               {
                 "seq": 7,
-                "name": "向荣路_007_节点",
+                "name": null,
                 "lon": 118.8246096155,
                 "lat": 31.9346414043,
                 "altitude": 29.318795
               },
               {
                 "seq": 8,
-                "name": "向荣路_008_航点",
+                "name": null,
                 "lon": 118.8243541685,
                 "lat": 31.9347125947,
                 "altitude": 31.553684
               },
               {
                 "seq": 9,
-                "name": "向荣路_009_塔",
+                "name": null,
                 "lon": 118.8245213634,
                 "lat": 31.9341231693,
                 "altitude": 30.322304
               },
               {
                 "seq": 10,
-                "name": "向荣路_010_杆",
+                "name": null,
                 "lon": 118.8252227539,
                 "lat": 31.9356812283,
                 "altitude": 111.88
               },
               {
                 "seq": 11,
-                "name": "向荣路_011_节点",
+                "name": null,
                 "lon": 118.8247478308,
                 "lat": 31.9353706483,
                 "altitude": 110.88
               },
               {
                 "seq": 12,
-                "name": "向荣路_012_航点",
+                "name": null,
                 "lon": 118.8242466712,
                 "lat": 31.9356859418,
                 "altitude": 109.07
               },
               {
                 "seq": 13,
-                "name": "向荣路_013_塔",
+                "name": null,
                 "lon": 118.8245681853,
                 "lat": 31.9356810121,
                 "altitude": 109.74
               },
               {
                 "seq": 14,
-                "name": "向荣路_014_杆",
+                "name": null,
                 "lon": 118.8243318303,
                 "lat": 31.9359322896,
                 "altitude": 111.5
               },
               {
                 "seq": 15,
-                "name": "向荣路_015_节点",
+                "name": null,
                 "lon": 118.8243416417,
                 "lat": 31.9354062709,
                 "altitude": 108.71
               },
               {
                 "seq": 16,
-                "name": "向荣路_016_航点",
+                "name": null,
                 "lon": 118.8250305767,
                 "lat": 31.9355229867,
                 "altitude": 109.19
               },
               {
                 "seq": 17,
-                "name": "向荣路_017_塔",
+                "name": null,
                 "lon": 118.8251657615,
                 "lat": 31.9354713014,
                 "altitude": 108.61
               },
               {
                 "seq": 18,
-                "name": "向荣路_018_杆",
+                "name": null,
                 "lon": 118.8253639104,
                 "lat": 31.9356836274,
                 "altitude": 111.11
               },
               {
                 "seq": 19,
-                "name": "向荣路_019_节点",
+                "name": null,
                 "lon": 118.825100604,
                 "lat": 31.9356144239,
                 "altitude": 109.3
               },
               {
                 "seq": 20,
-                "name": "向荣路_020_航点",
+                "name": null,
                 "lon": 118.824494686,
                 "lat": 31.9362767836,
                 "altitude": 111.51
               },
               {
                 "seq": 21,
-                "name": "向荣路_021_塔",
+                "name": null,
                 "lon": 118.8249819993,
                 "lat": 31.9355445085,
                 "altitude": 108.23
               },
               {
                 "seq": 22,
-                "name": "向荣路_022_杆",
+                "name": null,
                 "lon": 118.8245313861,
                 "lat": 31.9359240434,
                 "altitude": 108.34
               },
               {
                 "seq": 23,
-                "name": "向荣路_023_节点",
+                "name": null,
                 "lon": 118.8248017128,
                 "lat": 31.9358264287,
                 "altitude": 111.04
@@ -717,7 +717,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "向荣路_001_塔",
+                "name": null,
                 "lon": 118.8245661517,
                 "lat": 31.9363580036,
                 "altitude": 32.106176
@@ -725,7 +725,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "向荣路_002_杆",
+                "name": null,
                 "lon": 118.8248966152,
                 "lat": 31.936021319,
                 "altitude": 31.143762
@@ -733,7 +733,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "向荣路_003_节点",
+                "name": null,
                 "lon": 118.8246266254,
                 "lat": 31.9361479447,
                 "altitude": 30.554002
@@ -741,7 +741,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "向荣路_004_航点",
+                "name": null,
                 "lon": 118.8245313139,
                 "lat": 31.9354931885,
                 "altitude": 30.861551
@@ -749,7 +749,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "向荣路_005_塔",
+                "name": null,
                 "lon": 118.8244996078,
                 "lat": 31.9354429081,
                 "altitude": 31.970915
@@ -757,7 +757,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "向荣路_006_杆",
+                "name": null,
                 "lon": 118.8245588151,
                 "lat": 31.9349737226,
                 "altitude": 32.27006
@@ -765,7 +765,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "向荣路_007_节点",
+                "name": null,
                 "lon": 118.8246096155,
                 "lat": 31.9346414043,
                 "altitude": 29.318795
@@ -773,7 +773,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "向荣路_008_航点",
+                "name": null,
                 "lon": 118.8243541685,
                 "lat": 31.9347125947,
                 "altitude": 31.553684
@@ -781,7 +781,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "向荣路_009_塔",
+                "name": null,
                 "lon": 118.8245213634,
                 "lat": 31.9341231693,
                 "altitude": 30.322304
@@ -789,7 +789,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "向荣路_010_杆",
+                "name": null,
                 "lon": 118.8252227539,
                 "lat": 31.9356812283,
                 "altitude": 111.88
@@ -797,7 +797,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "向荣路_011_节点",
+                "name": null,
                 "lon": 118.8247478308,
                 "lat": 31.9353706483,
                 "altitude": 110.88
@@ -805,7 +805,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "向荣路_012_航点",
+                "name": null,
                 "lon": 118.8242466712,
                 "lat": 31.9356859418,
                 "altitude": 109.07
@@ -813,7 +813,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "向荣路_013_塔",
+                "name": null,
                 "lon": 118.8245681853,
                 "lat": 31.9356810121,
                 "altitude": 109.74
@@ -821,7 +821,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "向荣路_014_杆",
+                "name": null,
                 "lon": 118.8243318303,
                 "lat": 31.9359322896,
                 "altitude": 111.5
@@ -829,7 +829,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "向荣路_015_节点",
+                "name": null,
                 "lon": 118.8243416417,
                 "lat": 31.9354062709,
                 "altitude": 108.71
@@ -837,7 +837,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "向荣路_016_航点",
+                "name": null,
                 "lon": 118.8250305767,
                 "lat": 31.9355229867,
                 "altitude": 109.19
@@ -845,7 +845,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "向荣路_017_塔",
+                "name": null,
                 "lon": 118.8251657615,
                 "lat": 31.9354713014,
                 "altitude": 108.61
@@ -853,7 +853,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "向荣路_018_杆",
+                "name": null,
                 "lon": 118.8253639104,
                 "lat": 31.9356836274,
                 "altitude": 111.11
@@ -861,7 +861,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "向荣路_019_节点",
+                "name": null,
                 "lon": 118.825100604,
                 "lat": 31.9356144239,
                 "altitude": 109.3
@@ -869,7 +869,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "向荣路_020_航点",
+                "name": null,
                 "lon": 118.824494686,
                 "lat": 31.9362767836,
                 "altitude": 111.51
@@ -877,7 +877,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "向荣路_021_塔",
+                "name": null,
                 "lon": 118.8249819993,
                 "lat": 31.9355445085,
                 "altitude": 108.23
@@ -885,7 +885,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "向荣路_022_杆",
+                "name": null,
                 "lon": 118.8245313861,
                 "lat": 31.9359240434,
                 "altitude": 108.34
@@ -893,7 +893,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "向荣路_023_节点",
+                "name": null,
                 "lon": 118.8248017128,
                 "lat": 31.9358264287,
                 "altitude": 111.04
@@ -927,169 +927,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "向荣路_001_塔",
-            "segment_end_waypoint": "梅兰东路_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 23,
-            "first_waypoint": "梅兰东路_001_塔",
-            "last_waypoint": "梅兰东路_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "梅兰东路_001_塔",
+                "name": null,
                 "lon": 118.8274891633,
                 "lat": 31.9359464204,
                 "altitude": 30.102535
               },
               {
                 "seq": 2,
-                "name": "梅兰东路_002_杆",
+                "name": null,
                 "lon": 118.827204721,
                 "lat": 31.935974395,
                 "altitude": 31.207545
               },
               {
                 "seq": 3,
-                "name": "梅兰东路_003_节点",
+                "name": null,
                 "lon": 118.827624554,
                 "lat": 31.9353513794,
                 "altitude": 30.443212
               },
               {
                 "seq": 4,
-                "name": "梅兰东路_004_航点",
+                "name": null,
                 "lon": 118.8270902641,
                 "lat": 31.9351763948,
                 "altitude": 30.693512
               },
               {
                 "seq": 5,
-                "name": "梅兰东路_005_塔",
+                "name": null,
                 "lon": 118.8270578844,
                 "lat": 31.9349114591,
                 "altitude": 31.2271
               },
               {
                 "seq": 6,
-                "name": "梅兰东路_006_杆",
+                "name": null,
                 "lon": 118.8273461396,
                 "lat": 31.9346743946,
                 "altitude": 31.045244
               },
               {
                 "seq": 7,
-                "name": "梅兰东路_007_节点",
+                "name": null,
                 "lon": 118.827489558,
                 "lat": 31.9342907579,
                 "altitude": 31.594904
               },
               {
                 "seq": 8,
-                "name": "梅兰东路_008_航点",
+                "name": null,
                 "lon": 118.8274072627,
                 "lat": 31.9342402774,
                 "altitude": 29.643885
               },
               {
                 "seq": 9,
-                "name": "梅兰东路_009_塔",
+                "name": null,
                 "lon": 118.8275423952,
                 "lat": 31.9339870094,
                 "altitude": 29.455684
               },
               {
                 "seq": 10,
-                "name": "梅兰东路_010_杆",
+                "name": null,
                 "lon": 118.8273831109,
                 "lat": 31.9355722563,
                 "altitude": 110.41
               },
               {
                 "seq": 11,
-                "name": "梅兰东路_011_节点",
+                "name": null,
                 "lon": 118.82741564,
                 "lat": 31.9355015987,
                 "altitude": 110.14
               },
               {
                 "seq": 12,
-                "name": "梅兰东路_012_航点",
+                "name": null,
                 "lon": 118.8271215144,
                 "lat": 31.9352908803,
                 "altitude": 110.21
               },
               {
                 "seq": 13,
-                "name": "梅兰东路_013_塔",
+                "name": null,
                 "lon": 118.827381251,
                 "lat": 31.9356851926,
                 "altitude": 111.45
               },
               {
                 "seq": 14,
-                "name": "梅兰东路_014_杆",
+                "name": null,
                 "lon": 118.8271060074,
                 "lat": 31.9354827431,
                 "altitude": 108.18
               },
               {
                 "seq": 15,
-                "name": "梅兰东路_015_节点",
+                "name": null,
                 "lon": 118.8270203472,
                 "lat": 31.934979552,
                 "altitude": 108.32
               },
               {
                 "seq": 16,
-                "name": "梅兰东路_016_航点",
+                "name": null,
                 "lon": 118.8273226745,
                 "lat": 31.9347612764,
                 "altitude": 109.11
               },
               {
                 "seq": 17,
-                "name": "梅兰东路_017_塔",
+                "name": null,
                 "lon": 118.8278638024,
                 "lat": 31.9350248185,
                 "altitude": 109.48
               },
               {
                 "seq": 18,
-                "name": "梅兰东路_018_杆",
+                "name": null,
                 "lon": 118.8277321081,
                 "lat": 31.9352201867,
                 "altitude": 111.75
               },
               {
                 "seq": 19,
-                "name": "梅兰东路_019_节点",
+                "name": null,
                 "lon": 118.827871213,
                 "lat": 31.9356795594,
                 "altitude": 108.68
               },
               {
                 "seq": 20,
-                "name": "梅兰东路_020_航点",
+                "name": null,
                 "lon": 118.8276204761,
                 "lat": 31.935517366,
                 "altitude": 109.52
               },
               {
                 "seq": 21,
-                "name": "梅兰东路_021_塔",
+                "name": null,
                 "lon": 118.827776714,
                 "lat": 31.9354439999,
                 "altitude": 110.23
               },
               {
                 "seq": 22,
-                "name": "梅兰东路_022_杆",
+                "name": null,
                 "lon": 118.8271153489,
                 "lat": 31.9355615849,
                 "altitude": 111.1
               },
               {
                 "seq": 23,
-                "name": "梅兰东路_023_节点",
+                "name": null,
                 "lon": 118.8273475473,
                 "lat": 31.9355041613,
                 "altitude": 109.26
@@ -1105,7 +1105,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "梅兰东路_001_塔",
+                "name": null,
                 "lon": 118.8274891633,
                 "lat": 31.9359464204,
                 "altitude": 30.102535
@@ -1113,7 +1113,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "梅兰东路_002_杆",
+                "name": null,
                 "lon": 118.827204721,
                 "lat": 31.935974395,
                 "altitude": 31.207545
@@ -1121,7 +1121,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "梅兰东路_003_节点",
+                "name": null,
                 "lon": 118.827624554,
                 "lat": 31.9353513794,
                 "altitude": 30.443212
@@ -1129,7 +1129,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "梅兰东路_004_航点",
+                "name": null,
                 "lon": 118.8270902641,
                 "lat": 31.9351763948,
                 "altitude": 30.693512
@@ -1137,7 +1137,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "梅兰东路_005_塔",
+                "name": null,
                 "lon": 118.8270578844,
                 "lat": 31.9349114591,
                 "altitude": 31.2271
@@ -1145,7 +1145,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "梅兰东路_006_杆",
+                "name": null,
                 "lon": 118.8273461396,
                 "lat": 31.9346743946,
                 "altitude": 31.045244
@@ -1153,7 +1153,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "梅兰东路_007_节点",
+                "name": null,
                 "lon": 118.827489558,
                 "lat": 31.9342907579,
                 "altitude": 31.594904
@@ -1161,7 +1161,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "梅兰东路_008_航点",
+                "name": null,
                 "lon": 118.8274072627,
                 "lat": 31.9342402774,
                 "altitude": 29.643885
@@ -1169,7 +1169,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "梅兰东路_009_塔",
+                "name": null,
                 "lon": 118.8275423952,
                 "lat": 31.9339870094,
                 "altitude": 29.455684
@@ -1177,7 +1177,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "梅兰东路_010_杆",
+                "name": null,
                 "lon": 118.8273831109,
                 "lat": 31.9355722563,
                 "altitude": 110.41
@@ -1185,7 +1185,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "梅兰东路_011_节点",
+                "name": null,
                 "lon": 118.82741564,
                 "lat": 31.9355015987,
                 "altitude": 110.14
@@ -1193,7 +1193,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "梅兰东路_012_航点",
+                "name": null,
                 "lon": 118.8271215144,
                 "lat": 31.9352908803,
                 "altitude": 110.21
@@ -1201,7 +1201,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "梅兰东路_013_塔",
+                "name": null,
                 "lon": 118.827381251,
                 "lat": 31.9356851926,
                 "altitude": 111.45
@@ -1209,7 +1209,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "梅兰东路_014_杆",
+                "name": null,
                 "lon": 118.8271060074,
                 "lat": 31.9354827431,
                 "altitude": 108.18
@@ -1217,7 +1217,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "梅兰东路_015_节点",
+                "name": null,
                 "lon": 118.8270203472,
                 "lat": 31.934979552,
                 "altitude": 108.32
@@ -1225,7 +1225,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "梅兰东路_016_航点",
+                "name": null,
                 "lon": 118.8273226745,
                 "lat": 31.9347612764,
                 "altitude": 109.11
@@ -1233,7 +1233,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "梅兰东路_017_塔",
+                "name": null,
                 "lon": 118.8278638024,
                 "lat": 31.9350248185,
                 "altitude": 109.48
@@ -1241,7 +1241,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "梅兰东路_018_杆",
+                "name": null,
                 "lon": 118.8277321081,
                 "lat": 31.9352201867,
                 "altitude": 111.75
@@ -1249,7 +1249,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "梅兰东路_019_节点",
+                "name": null,
                 "lon": 118.827871213,
                 "lat": 31.9356795594,
                 "altitude": 108.68
@@ -1257,7 +1257,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "梅兰东路_020_航点",
+                "name": null,
                 "lon": 118.8276204761,
                 "lat": 31.935517366,
                 "altitude": 109.52
@@ -1265,7 +1265,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "梅兰东路_021_塔",
+                "name": null,
                 "lon": 118.827776714,
                 "lat": 31.9354439999,
                 "altitude": 110.23
@@ -1273,7 +1273,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "梅兰东路_022_杆",
+                "name": null,
                 "lon": 118.8271153489,
                 "lat": 31.9355615849,
                 "altitude": 111.1
@@ -1281,7 +1281,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "梅兰东路_023_节点",
+                "name": null,
                 "lon": 118.8273475473,
                 "lat": 31.9355041613,
                 "altitude": 109.26
@@ -1315,169 +1315,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "向荣一号_001_塔",
-            "segment_end_waypoint": "向荣一号_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 23,
-            "first_waypoint": "向荣一号_001_塔",
-            "last_waypoint": "向荣一号_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "向荣一号_001_塔",
+                "name": null,
                 "lon": 118.8241406884,
                 "lat": 31.9334587978,
                 "altitude": 32.233373
               },
               {
                 "seq": 2,
-                "name": "向荣一号_002_杆",
+                "name": null,
                 "lon": 118.8242299164,
                 "lat": 31.9333029546,
                 "altitude": 30.542471
               },
               {
                 "seq": 3,
-                "name": "向荣一号_003_节点",
+                "name": null,
                 "lon": 118.8243430508,
                 "lat": 31.9331736067,
                 "altitude": 32.163714
               },
               {
                 "seq": 4,
-                "name": "向荣一号_004_航点",
+                "name": null,
                 "lon": 118.8244058468,
                 "lat": 31.9327762569,
                 "altitude": 29.641837
               },
               {
                 "seq": 5,
-                "name": "向荣一号_005_塔",
+                "name": null,
                 "lon": 118.8242199875,
                 "lat": 31.9326733821,
                 "altitude": 31.014988
               },
               {
                 "seq": 6,
-                "name": "向荣一号_006_杆",
+                "name": null,
                 "lon": 118.8243444919,
                 "lat": 31.9322909155,
                 "altitude": 29.448943
               },
               {
                 "seq": 7,
-                "name": "向荣一号_007_节点",
+                "name": null,
                 "lon": 118.8243544063,
                 "lat": 31.9318885688,
                 "altitude": 31.735606
               },
               {
                 "seq": 8,
-                "name": "向荣一号_008_航点",
+                "name": null,
                 "lon": 118.8240828387,
                 "lat": 31.9319125945,
                 "altitude": 29.417781
               },
               {
                 "seq": 9,
-                "name": "向荣一号_009_塔",
+                "name": null,
                 "lon": 118.8240795624,
                 "lat": 31.9314420737,
                 "altitude": 31.203084
               },
               {
                 "seq": 10,
-                "name": "向荣一号_010_杆",
+                "name": null,
                 "lon": 118.8244662034,
                 "lat": 31.9324356916,
                 "altitude": 111.56
               },
               {
                 "seq": 11,
-                "name": "向荣一号_011_节点",
+                "name": null,
                 "lon": 118.8240790922,
                 "lat": 31.9327204711,
                 "altitude": 110.48
               },
               {
                 "seq": 12,
-                "name": "向荣一号_012_航点",
+                "name": null,
                 "lon": 118.8237891799,
                 "lat": 31.932713963,
                 "altitude": 110.09
               },
               {
                 "seq": 13,
-                "name": "向荣一号_013_塔",
+                "name": null,
                 "lon": 118.824444432,
                 "lat": 31.9327366363,
                 "altitude": 110.86
               },
               {
                 "seq": 14,
-                "name": "向荣一号_014_杆",
+                "name": null,
                 "lon": 118.8239028077,
                 "lat": 31.9325974715,
                 "altitude": 110.69
               },
               {
                 "seq": 15,
-                "name": "向荣一号_015_节点",
+                "name": null,
                 "lon": 118.8240636065,
                 "lat": 31.9322956255,
                 "altitude": 111.01
               },
               {
                 "seq": 16,
-                "name": "向荣一号_016_航点",
+                "name": null,
                 "lon": 118.8242265259,
                 "lat": 31.9322756468,
                 "altitude": 111.99
               },
               {
                 "seq": 17,
-                "name": "向荣一号_017_塔",
+                "name": null,
                 "lon": 118.8250800496,
                 "lat": 31.9321498757,
                 "altitude": 108.85
               },
               {
                 "seq": 18,
-                "name": "向荣一号_018_杆",
+                "name": null,
                 "lon": 118.8247655242,
                 "lat": 31.9329199556,
                 "altitude": 111.52
               },
               {
                 "seq": 19,
-                "name": "向荣一号_019_节点",
+                "name": null,
                 "lon": 118.8250099539,
                 "lat": 31.932835797,
                 "altitude": 108.63
               },
               {
                 "seq": 20,
-                "name": "向荣一号_020_航点",
+                "name": null,
                 "lon": 118.824683247,
                 "lat": 31.9331414484,
                 "altitude": 110.45
               },
               {
                 "seq": 21,
-                "name": "向荣一号_021_塔",
+                "name": null,
                 "lon": 118.8247753398,
                 "lat": 31.9327523858,
                 "altitude": 108.03
               },
               {
                 "seq": 22,
-                "name": "向荣一号_022_杆",
+                "name": null,
                 "lon": 118.8241948428,
                 "lat": 31.932535501,
                 "altitude": 110.65
               },
               {
                 "seq": 23,
-                "name": "向荣一号_023_节点",
+                "name": null,
                 "lon": 118.8247734765,
                 "lat": 31.9328654758,
                 "altitude": 108.46
@@ -1493,7 +1493,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "向荣一号_001_塔",
+                "name": null,
                 "lon": 118.8241406884,
                 "lat": 31.9334587978,
                 "altitude": 32.233373
@@ -1501,7 +1501,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "向荣一号_002_杆",
+                "name": null,
                 "lon": 118.8242299164,
                 "lat": 31.9333029546,
                 "altitude": 30.542471
@@ -1509,7 +1509,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "向荣一号_003_节点",
+                "name": null,
                 "lon": 118.8243430508,
                 "lat": 31.9331736067,
                 "altitude": 32.163714
@@ -1517,7 +1517,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "向荣一号_004_航点",
+                "name": null,
                 "lon": 118.8244058468,
                 "lat": 31.9327762569,
                 "altitude": 29.641837
@@ -1525,7 +1525,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "向荣一号_005_塔",
+                "name": null,
                 "lon": 118.8242199875,
                 "lat": 31.9326733821,
                 "altitude": 31.014988
@@ -1533,7 +1533,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "向荣一号_006_杆",
+                "name": null,
                 "lon": 118.8243444919,
                 "lat": 31.9322909155,
                 "altitude": 29.448943
@@ -1541,7 +1541,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "向荣一号_007_节点",
+                "name": null,
                 "lon": 118.8243544063,
                 "lat": 31.9318885688,
                 "altitude": 31.735606
@@ -1549,7 +1549,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "向荣一号_008_航点",
+                "name": null,
                 "lon": 118.8240828387,
                 "lat": 31.9319125945,
                 "altitude": 29.417781
@@ -1557,7 +1557,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "向荣一号_009_塔",
+                "name": null,
                 "lon": 118.8240795624,
                 "lat": 31.9314420737,
                 "altitude": 31.203084
@@ -1565,7 +1565,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "向荣一号_010_杆",
+                "name": null,
                 "lon": 118.8244662034,
                 "lat": 31.9324356916,
                 "altitude": 111.56
@@ -1573,7 +1573,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "向荣一号_011_节点",
+                "name": null,
                 "lon": 118.8240790922,
                 "lat": 31.9327204711,
                 "altitude": 110.48
@@ -1581,7 +1581,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "向荣一号_012_航点",
+                "name": null,
                 "lon": 118.8237891799,
                 "lat": 31.932713963,
                 "altitude": 110.09
@@ -1589,7 +1589,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "向荣一号_013_塔",
+                "name": null,
                 "lon": 118.824444432,
                 "lat": 31.9327366363,
                 "altitude": 110.86
@@ -1597,7 +1597,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "向荣一号_014_杆",
+                "name": null,
                 "lon": 118.8239028077,
                 "lat": 31.9325974715,
                 "altitude": 110.69
@@ -1605,7 +1605,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "向荣一号_015_节点",
+                "name": null,
                 "lon": 118.8240636065,
                 "lat": 31.9322956255,
                 "altitude": 111.01
@@ -1613,7 +1613,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "向荣一号_016_航点",
+                "name": null,
                 "lon": 118.8242265259,
                 "lat": 31.9322756468,
                 "altitude": 111.99
@@ -1621,7 +1621,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "向荣一号_017_塔",
+                "name": null,
                 "lon": 118.8250800496,
                 "lat": 31.9321498757,
                 "altitude": 108.85
@@ -1629,7 +1629,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "向荣一号_018_杆",
+                "name": null,
                 "lon": 118.8247655242,
                 "lat": 31.9329199556,
                 "altitude": 111.52
@@ -1637,7 +1637,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "向荣一号_019_节点",
+                "name": null,
                 "lon": 118.8250099539,
                 "lat": 31.932835797,
                 "altitude": 108.63
@@ -1645,7 +1645,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "向荣一号_020_航点",
+                "name": null,
                 "lon": 118.824683247,
                 "lat": 31.9331414484,
                 "altitude": 110.45
@@ -1653,7 +1653,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "向荣一号_021_塔",
+                "name": null,
                 "lon": 118.8247753398,
                 "lat": 31.9327523858,
                 "altitude": 108.03
@@ -1661,7 +1661,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "向荣一号_022_杆",
+                "name": null,
                 "lon": 118.8241948428,
                 "lat": 31.932535501,
                 "altitude": 110.65
@@ -1669,7 +1669,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "向荣一号_023_节点",
+                "name": null,
                 "lon": 118.8247734765,
                 "lat": 31.9328654758,
                 "altitude": 108.46
@@ -1703,169 +1703,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "总部基地_001_塔",
-            "segment_end_waypoint": "总部基地_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 23,
-            "first_waypoint": "总部基地_001_塔",
-            "last_waypoint": "总部基地_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "总部基地_001_塔",
+                "name": null,
                 "lon": 118.8278650079,
                 "lat": 31.9338084488,
                 "altitude": 30.703294
               },
               {
                 "seq": 2,
-                "name": "总部基地_002_杆",
+                "name": null,
                 "lon": 118.8277006768,
                 "lat": 31.9334915462,
                 "altitude": 31.794745
               },
               {
                 "seq": 3,
-                "name": "总部基地_003_节点",
+                "name": null,
                 "lon": 118.827643129,
                 "lat": 31.933226295,
                 "altitude": 30.795335
               },
               {
                 "seq": 4,
-                "name": "总部基地_004_航点",
+                "name": null,
                 "lon": 118.8278103444,
                 "lat": 31.9329659026,
                 "altitude": 30.112595
               },
               {
                 "seq": 5,
-                "name": "总部基地_005_塔",
+                "name": null,
                 "lon": 118.8279390524,
                 "lat": 31.9329820834,
                 "altitude": 30.591747
               },
               {
                 "seq": 6,
-                "name": "总部基地_006_杆",
+                "name": null,
                 "lon": 118.8276297203,
                 "lat": 31.9324147327,
                 "altitude": 29.951539
               },
               {
                 "seq": 7,
-                "name": "总部基地_007_节点",
+                "name": null,
                 "lon": 118.827506751,
                 "lat": 31.9324398438,
                 "altitude": 29.867791
               },
               {
                 "seq": 8,
-                "name": "总部基地_008_航点",
+                "name": null,
                 "lon": 118.8274205095,
                 "lat": 31.931878723,
                 "altitude": 31.070755
               },
               {
                 "seq": 9,
-                "name": "总部基地_009_塔",
+                "name": null,
                 "lon": 118.8274054324,
                 "lat": 31.9321283047,
                 "altitude": 31.756353
               },
               {
                 "seq": 10,
-                "name": "总部基地_010_杆",
+                "name": null,
                 "lon": 118.8276675955,
                 "lat": 31.9330065624,
                 "altitude": 110.68
               },
               {
                 "seq": 11,
-                "name": "总部基地_011_节点",
+                "name": null,
                 "lon": 118.8273599051,
                 "lat": 31.9329431468,
                 "altitude": 111.74
               },
               {
                 "seq": 12,
-                "name": "总部基地_012_航点",
+                "name": null,
                 "lon": 118.8271802708,
                 "lat": 31.9331473623,
                 "altitude": 111.14
               },
               {
                 "seq": 13,
-                "name": "总部基地_013_塔",
+                "name": null,
                 "lon": 118.8276681064,
                 "lat": 31.9332283267,
                 "altitude": 108.39
               },
               {
                 "seq": 14,
-                "name": "总部基地_014_杆",
+                "name": null,
                 "lon": 118.8273182268,
                 "lat": 31.9331141472,
                 "altitude": 109.87
               },
               {
                 "seq": 15,
-                "name": "总部基地_015_节点",
+                "name": null,
                 "lon": 118.8276210537,
                 "lat": 31.933009938,
                 "altitude": 111.94
               },
               {
                 "seq": 16,
-                "name": "总部基地_016_航点",
+                "name": null,
                 "lon": 118.8275420507,
                 "lat": 31.9327422483,
                 "altitude": 109.36
               },
               {
                 "seq": 17,
-                "name": "总部基地_017_塔",
+                "name": null,
                 "lon": 118.8282993953,
                 "lat": 31.932755113,
                 "altitude": 108.76
               },
               {
                 "seq": 18,
-                "name": "总部基地_018_杆",
+                "name": null,
                 "lon": 118.828175572,
                 "lat": 31.933113129,
                 "altitude": 109.11
               },
               {
                 "seq": 19,
-                "name": "总部基地_019_节点",
+                "name": null,
                 "lon": 118.8279322756,
                 "lat": 31.9336680401,
                 "altitude": 109.77
               },
               {
                 "seq": 20,
-                "name": "总部基地_020_航点",
+                "name": null,
                 "lon": 118.8279998095,
                 "lat": 31.9335495197,
                 "altitude": 108.2
               },
               {
                 "seq": 21,
-                "name": "总部基地_021_塔",
+                "name": null,
                 "lon": 118.8280825695,
                 "lat": 31.9333616166,
                 "altitude": 111.88
               },
               {
                 "seq": 22,
-                "name": "总部基地_022_杆",
+                "name": null,
                 "lon": 118.8275604006,
                 "lat": 31.9333650911,
                 "altitude": 108.67
               },
               {
                 "seq": 23,
-                "name": "总部基地_023_节点",
+                "name": null,
                 "lon": 118.8278015032,
                 "lat": 31.9334131495,
                 "altitude": 109.6
@@ -1881,7 +1881,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "总部基地_001_塔",
+                "name": null,
                 "lon": 118.8278650079,
                 "lat": 31.9338084488,
                 "altitude": 30.703294
@@ -1889,7 +1889,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "总部基地_002_杆",
+                "name": null,
                 "lon": 118.8277006768,
                 "lat": 31.9334915462,
                 "altitude": 31.794745
@@ -1897,7 +1897,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "总部基地_003_节点",
+                "name": null,
                 "lon": 118.827643129,
                 "lat": 31.933226295,
                 "altitude": 30.795335
@@ -1905,7 +1905,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "总部基地_004_航点",
+                "name": null,
                 "lon": 118.8278103444,
                 "lat": 31.9329659026,
                 "altitude": 30.112595
@@ -1913,7 +1913,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "总部基地_005_塔",
+                "name": null,
                 "lon": 118.8279390524,
                 "lat": 31.9329820834,
                 "altitude": 30.591747
@@ -1921,7 +1921,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "总部基地_006_杆",
+                "name": null,
                 "lon": 118.8276297203,
                 "lat": 31.9324147327,
                 "altitude": 29.951539
@@ -1929,7 +1929,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "总部基地_007_节点",
+                "name": null,
                 "lon": 118.827506751,
                 "lat": 31.9324398438,
                 "altitude": 29.867791
@@ -1937,7 +1937,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "总部基地_008_航点",
+                "name": null,
                 "lon": 118.8274205095,
                 "lat": 31.931878723,
                 "altitude": 31.070755
@@ -1945,7 +1945,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "总部基地_009_塔",
+                "name": null,
                 "lon": 118.8274054324,
                 "lat": 31.9321283047,
                 "altitude": 31.756353
@@ -1953,7 +1953,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "总部基地_010_杆",
+                "name": null,
                 "lon": 118.8276675955,
                 "lat": 31.9330065624,
                 "altitude": 110.68
@@ -1961,7 +1961,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "总部基地_011_节点",
+                "name": null,
                 "lon": 118.8273599051,
                 "lat": 31.9329431468,
                 "altitude": 111.74
@@ -1969,7 +1969,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "总部基地_012_航点",
+                "name": null,
                 "lon": 118.8271802708,
                 "lat": 31.9331473623,
                 "altitude": 111.14
@@ -1977,7 +1977,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "总部基地_013_塔",
+                "name": null,
                 "lon": 118.8276681064,
                 "lat": 31.9332283267,
                 "altitude": 108.39
@@ -1985,7 +1985,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "总部基地_014_杆",
+                "name": null,
                 "lon": 118.8273182268,
                 "lat": 31.9331141472,
                 "altitude": 109.87
@@ -1993,7 +1993,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "总部基地_015_节点",
+                "name": null,
                 "lon": 118.8276210537,
                 "lat": 31.933009938,
                 "altitude": 111.94
@@ -2001,7 +2001,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "总部基地_016_航点",
+                "name": null,
                 "lon": 118.8275420507,
                 "lat": 31.9327422483,
                 "altitude": 109.36
@@ -2009,7 +2009,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "总部基地_017_塔",
+                "name": null,
                 "lon": 118.8282993953,
                 "lat": 31.932755113,
                 "altitude": 108.76
@@ -2017,7 +2017,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "总部基地_018_杆",
+                "name": null,
                 "lon": 118.828175572,
                 "lat": 31.933113129,
                 "altitude": 109.11
@@ -2025,7 +2025,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "总部基地_019_节点",
+                "name": null,
                 "lon": 118.8279322756,
                 "lat": 31.9336680401,
                 "altitude": 109.77
@@ -2033,7 +2033,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "总部基地_020_航点",
+                "name": null,
                 "lon": 118.8279998095,
                 "lat": 31.9335495197,
                 "altitude": 108.2
@@ -2041,7 +2041,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "总部基地_021_塔",
+                "name": null,
                 "lon": 118.8280825695,
                 "lat": 31.9333616166,
                 "altitude": 111.88
@@ -2049,7 +2049,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "总部基地_022_杆",
+                "name": null,
                 "lon": 118.8275604006,
                 "lat": 31.9333650911,
                 "altitude": 108.67
@@ -2057,7 +2057,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "总部基地_023_节点",
+                "name": null,
                 "lon": 118.8278015032,
                 "lat": 31.9334131495,
                 "altitude": 109.6
@@ -2078,7 +2078,7 @@
       {
         "scheme_name": "time_first",
         "scheme_label": "时效优先方案",
-        "description": "该方案优先保障任务时效，通过优化航线规划实现更短的完成时间并减少接力次数，同时严格确保返航安全。",
+        "description": "该方案在确保返航安全的前提下，通过减少接力次数来缩短整体完成时间。",
         "is_recommended": true,
         "status": "success",
         "assigned_target_count": 4,
@@ -2117,8 +2117,8 @@
                 "segment_count": 1,
                 "route_id": "360590073894273081",
                 "route_name": "向荣路主次干道",
-                "start_waypoint": "向荣路_001_塔",
-                "end_waypoint": "向荣路_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               },
               {
@@ -2128,8 +2128,8 @@
                 "segment_count": 1,
                 "route_id": "343108096710672392",
                 "route_name": "梅兰东路",
-                "start_waypoint": "梅兰东路_001_塔",
-                "end_waypoint": "梅兰东路_022_杆",
+                "start_waypoint": 0,
+                "end_waypoint": 21,
                 "waypoint_count": 5
               }
             ]
@@ -2158,8 +2158,8 @@
                 "segment_count": 1,
                 "route_id": "367642289935221019",
                 "route_name": "向荣一号",
-                "start_waypoint": "向荣一号_001_塔",
-                "end_waypoint": "向荣一号_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               }
             ]
@@ -2190,8 +2190,8 @@
                 "segment_count": 1,
                 "route_id": "363089611716558925",
                 "route_name": "总部基地区域",
-                "start_waypoint": "总部基地_001_塔",
-                "end_waypoint": "总部基地_023_节点",
+                "start_waypoint": 0,
+                "end_waypoint": 22,
                 "waypoint_count": 23
               },
               {
@@ -2201,8 +2201,8 @@
                 "segment_count": 1,
                 "route_id": "343108096710672392",
                 "route_name": "梅兰东路",
-                "start_waypoint": "梅兰东路_003_节点",
-                "end_waypoint": "梅兰东路_023_节点",
+                "start_waypoint": 2,
+                "end_waypoint": 22,
                 "waypoint_count": 18
               }
             ]
@@ -2229,169 +2229,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "向荣路_001_塔",
-            "segment_end_waypoint": "梅兰东路_022_杆",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 21,
             "waypoint_count": 23,
-            "first_waypoint": "向荣路_001_塔",
-            "last_waypoint": "向荣路_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "向荣路_001_塔",
+                "name": null,
                 "lon": 118.8245661517,
                 "lat": 31.9363580036,
                 "altitude": 32.106176
               },
               {
                 "seq": 2,
-                "name": "向荣路_002_杆",
+                "name": null,
                 "lon": 118.8248966152,
                 "lat": 31.936021319,
                 "altitude": 31.143762
               },
               {
                 "seq": 3,
-                "name": "向荣路_003_节点",
+                "name": null,
                 "lon": 118.8246266254,
                 "lat": 31.9361479447,
                 "altitude": 30.554002
               },
               {
                 "seq": 4,
-                "name": "向荣路_004_航点",
+                "name": null,
                 "lon": 118.8245313139,
                 "lat": 31.9354931885,
                 "altitude": 30.861551
               },
               {
                 "seq": 5,
-                "name": "向荣路_005_塔",
+                "name": null,
                 "lon": 118.8244996078,
                 "lat": 31.9354429081,
                 "altitude": 31.970915
               },
               {
                 "seq": 6,
-                "name": "向荣路_006_杆",
+                "name": null,
                 "lon": 118.8245588151,
                 "lat": 31.9349737226,
                 "altitude": 32.27006
               },
               {
                 "seq": 7,
-                "name": "向荣路_007_节点",
+                "name": null,
                 "lon": 118.8246096155,
                 "lat": 31.9346414043,
                 "altitude": 29.318795
               },
               {
                 "seq": 8,
-                "name": "向荣路_008_航点",
+                "name": null,
                 "lon": 118.8243541685,
                 "lat": 31.9347125947,
                 "altitude": 31.553684
               },
               {
                 "seq": 9,
-                "name": "向荣路_009_塔",
+                "name": null,
                 "lon": 118.8245213634,
                 "lat": 31.9341231693,
                 "altitude": 30.322304
               },
               {
                 "seq": 10,
-                "name": "向荣路_010_杆",
+                "name": null,
                 "lon": 118.8252227539,
                 "lat": 31.9356812283,
                 "altitude": 111.88
               },
               {
                 "seq": 11,
-                "name": "向荣路_011_节点",
+                "name": null,
                 "lon": 118.8247478308,
                 "lat": 31.9353706483,
                 "altitude": 110.88
               },
               {
                 "seq": 12,
-                "name": "向荣路_012_航点",
+                "name": null,
                 "lon": 118.8242466712,
                 "lat": 31.9356859418,
                 "altitude": 109.07
               },
               {
                 "seq": 13,
-                "name": "向荣路_013_塔",
+                "name": null,
                 "lon": 118.8245681853,
                 "lat": 31.9356810121,
                 "altitude": 109.74
               },
               {
                 "seq": 14,
-                "name": "向荣路_014_杆",
+                "name": null,
                 "lon": 118.8243318303,
                 "lat": 31.9359322896,
                 "altitude": 111.5
               },
               {
                 "seq": 15,
-                "name": "向荣路_015_节点",
+                "name": null,
                 "lon": 118.8243416417,
                 "lat": 31.9354062709,
                 "altitude": 108.71
               },
               {
                 "seq": 16,
-                "name": "向荣路_016_航点",
+                "name": null,
                 "lon": 118.8250305767,
                 "lat": 31.9355229867,
                 "altitude": 109.19
               },
               {
                 "seq": 17,
-                "name": "向荣路_017_塔",
+                "name": null,
                 "lon": 118.8251657615,
                 "lat": 31.9354713014,
                 "altitude": 108.61
               },
               {
                 "seq": 18,
-                "name": "向荣路_018_杆",
+                "name": null,
                 "lon": 118.8253639104,
                 "lat": 31.9356836274,
                 "altitude": 111.11
               },
               {
                 "seq": 19,
-                "name": "向荣路_019_节点",
+                "name": null,
                 "lon": 118.825100604,
                 "lat": 31.9356144239,
                 "altitude": 109.3
               },
               {
                 "seq": 20,
-                "name": "向荣路_020_航点",
+                "name": null,
                 "lon": 118.824494686,
                 "lat": 31.9362767836,
                 "altitude": 111.51
               },
               {
                 "seq": 21,
-                "name": "向荣路_021_塔",
+                "name": null,
                 "lon": 118.8249819993,
                 "lat": 31.9355445085,
                 "altitude": 108.23
               },
               {
                 "seq": 22,
-                "name": "向荣路_022_杆",
+                "name": null,
                 "lon": 118.8245313861,
                 "lat": 31.9359240434,
                 "altitude": 108.34
               },
               {
                 "seq": 23,
-                "name": "向荣路_023_节点",
+                "name": null,
                 "lon": 118.8248017128,
                 "lat": 31.9358264287,
                 "altitude": 111.04
@@ -2407,7 +2407,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "向荣路_001_塔",
+                "name": null,
                 "lon": 118.8245661517,
                 "lat": 31.9363580036,
                 "altitude": 32.106176
@@ -2415,7 +2415,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "向荣路_002_杆",
+                "name": null,
                 "lon": 118.8248966152,
                 "lat": 31.936021319,
                 "altitude": 31.143762
@@ -2423,7 +2423,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "向荣路_003_节点",
+                "name": null,
                 "lon": 118.8246266254,
                 "lat": 31.9361479447,
                 "altitude": 30.554002
@@ -2431,7 +2431,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "向荣路_004_航点",
+                "name": null,
                 "lon": 118.8245313139,
                 "lat": 31.9354931885,
                 "altitude": 30.861551
@@ -2439,7 +2439,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "向荣路_005_塔",
+                "name": null,
                 "lon": 118.8244996078,
                 "lat": 31.9354429081,
                 "altitude": 31.970915
@@ -2447,7 +2447,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "向荣路_006_杆",
+                "name": null,
                 "lon": 118.8245588151,
                 "lat": 31.9349737226,
                 "altitude": 32.27006
@@ -2455,7 +2455,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "向荣路_007_节点",
+                "name": null,
                 "lon": 118.8246096155,
                 "lat": 31.9346414043,
                 "altitude": 29.318795
@@ -2463,7 +2463,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "向荣路_008_航点",
+                "name": null,
                 "lon": 118.8243541685,
                 "lat": 31.9347125947,
                 "altitude": 31.553684
@@ -2471,7 +2471,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "向荣路_009_塔",
+                "name": null,
                 "lon": 118.8245213634,
                 "lat": 31.9341231693,
                 "altitude": 30.322304
@@ -2479,7 +2479,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "向荣路_010_杆",
+                "name": null,
                 "lon": 118.8252227539,
                 "lat": 31.9356812283,
                 "altitude": 111.88
@@ -2487,7 +2487,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "向荣路_011_节点",
+                "name": null,
                 "lon": 118.8247478308,
                 "lat": 31.9353706483,
                 "altitude": 110.88
@@ -2495,7 +2495,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "向荣路_012_航点",
+                "name": null,
                 "lon": 118.8242466712,
                 "lat": 31.9356859418,
                 "altitude": 109.07
@@ -2503,7 +2503,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "向荣路_013_塔",
+                "name": null,
                 "lon": 118.8245681853,
                 "lat": 31.9356810121,
                 "altitude": 109.74
@@ -2511,7 +2511,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "向荣路_014_杆",
+                "name": null,
                 "lon": 118.8243318303,
                 "lat": 31.9359322896,
                 "altitude": 111.5
@@ -2519,7 +2519,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "向荣路_015_节点",
+                "name": null,
                 "lon": 118.8243416417,
                 "lat": 31.9354062709,
                 "altitude": 108.71
@@ -2527,7 +2527,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "向荣路_016_航点",
+                "name": null,
                 "lon": 118.8250305767,
                 "lat": 31.9355229867,
                 "altitude": 109.19
@@ -2535,7 +2535,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "向荣路_017_塔",
+                "name": null,
                 "lon": 118.8251657615,
                 "lat": 31.9354713014,
                 "altitude": 108.61
@@ -2543,7 +2543,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "向荣路_018_杆",
+                "name": null,
                 "lon": 118.8253639104,
                 "lat": 31.9356836274,
                 "altitude": 111.11
@@ -2551,7 +2551,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "向荣路_019_节点",
+                "name": null,
                 "lon": 118.825100604,
                 "lat": 31.9356144239,
                 "altitude": 109.3
@@ -2559,7 +2559,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "向荣路_020_航点",
+                "name": null,
                 "lon": 118.824494686,
                 "lat": 31.9362767836,
                 "altitude": 111.51
@@ -2567,7 +2567,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "向荣路_021_塔",
+                "name": null,
                 "lon": 118.8249819993,
                 "lat": 31.9355445085,
                 "altitude": 108.23
@@ -2575,7 +2575,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "向荣路_022_杆",
+                "name": null,
                 "lon": 118.8245313861,
                 "lat": 31.9359240434,
                 "altitude": 108.34
@@ -2583,7 +2583,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "向荣路_023_节点",
+                "name": null,
                 "lon": 118.8248017128,
                 "lat": 31.9358264287,
                 "altitude": 111.04
@@ -2617,43 +2617,43 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "向荣路_001_塔",
-            "segment_end_waypoint": "梅兰东路_022_杆",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 21,
             "waypoint_count": 5,
-            "first_waypoint": "梅兰东路_001_塔",
-            "last_waypoint": "梅兰东路_022_杆",
+            "first_waypoint": 0,
+            "last_waypoint": 21,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "梅兰东路_001_塔",
+                "name": null,
                 "lon": 118.8274891633,
                 "lat": 31.9359464204,
                 "altitude": 30.102535
               },
               {
                 "seq": 2,
-                "name": "梅兰东路_002_杆",
+                "name": null,
                 "lon": 118.827204721,
                 "lat": 31.935974395,
                 "altitude": 31.207545
               },
               {
                 "seq": 3,
-                "name": "梅兰东路_013_塔",
+                "name": null,
                 "lon": 118.827381251,
                 "lat": 31.9356851926,
                 "altitude": 111.45
               },
               {
                 "seq": 4,
-                "name": "梅兰东路_014_杆",
+                "name": null,
                 "lon": 118.8271060074,
                 "lat": 31.9354827431,
                 "altitude": 108.18
               },
               {
                 "seq": 5,
-                "name": "梅兰东路_022_杆",
+                "name": null,
                 "lon": 118.8271153489,
                 "lat": 31.9355615849,
                 "altitude": 111.1
@@ -2669,7 +2669,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "梅兰东路_001_塔",
+                "name": null,
                 "lon": 118.8274891633,
                 "lat": 31.9359464204,
                 "altitude": 30.102535
@@ -2677,7 +2677,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "梅兰东路_002_杆",
+                "name": null,
                 "lon": 118.827204721,
                 "lat": 31.935974395,
                 "altitude": 31.207545
@@ -2685,7 +2685,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "梅兰东路_013_塔",
+                "name": null,
                 "lon": 118.827381251,
                 "lat": 31.9356851926,
                 "altitude": 111.45
@@ -2693,7 +2693,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "梅兰东路_014_杆",
+                "name": null,
                 "lon": 118.8271060074,
                 "lat": 31.9354827431,
                 "altitude": 108.18
@@ -2701,7 +2701,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "梅兰东路_022_杆",
+                "name": null,
                 "lon": 118.8271153489,
                 "lat": 31.9355615849,
                 "altitude": 111.1
@@ -2735,169 +2735,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "向荣一号_001_塔",
-            "segment_end_waypoint": "向荣一号_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 23,
-            "first_waypoint": "向荣一号_001_塔",
-            "last_waypoint": "向荣一号_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "向荣一号_001_塔",
+                "name": null,
                 "lon": 118.8241406884,
                 "lat": 31.9334587978,
                 "altitude": 32.233373
               },
               {
                 "seq": 2,
-                "name": "向荣一号_002_杆",
+                "name": null,
                 "lon": 118.8242299164,
                 "lat": 31.9333029546,
                 "altitude": 30.542471
               },
               {
                 "seq": 3,
-                "name": "向荣一号_003_节点",
+                "name": null,
                 "lon": 118.8243430508,
                 "lat": 31.9331736067,
                 "altitude": 32.163714
               },
               {
                 "seq": 4,
-                "name": "向荣一号_004_航点",
+                "name": null,
                 "lon": 118.8244058468,
                 "lat": 31.9327762569,
                 "altitude": 29.641837
               },
               {
                 "seq": 5,
-                "name": "向荣一号_005_塔",
+                "name": null,
                 "lon": 118.8242199875,
                 "lat": 31.9326733821,
                 "altitude": 31.014988
               },
               {
                 "seq": 6,
-                "name": "向荣一号_006_杆",
+                "name": null,
                 "lon": 118.8243444919,
                 "lat": 31.9322909155,
                 "altitude": 29.448943
               },
               {
                 "seq": 7,
-                "name": "向荣一号_007_节点",
+                "name": null,
                 "lon": 118.8243544063,
                 "lat": 31.9318885688,
                 "altitude": 31.735606
               },
               {
                 "seq": 8,
-                "name": "向荣一号_008_航点",
+                "name": null,
                 "lon": 118.8240828387,
                 "lat": 31.9319125945,
                 "altitude": 29.417781
               },
               {
                 "seq": 9,
-                "name": "向荣一号_009_塔",
+                "name": null,
                 "lon": 118.8240795624,
                 "lat": 31.9314420737,
                 "altitude": 31.203084
               },
               {
                 "seq": 10,
-                "name": "向荣一号_010_杆",
+                "name": null,
                 "lon": 118.8244662034,
                 "lat": 31.9324356916,
                 "altitude": 111.56
               },
               {
                 "seq": 11,
-                "name": "向荣一号_011_节点",
+                "name": null,
                 "lon": 118.8240790922,
                 "lat": 31.9327204711,
                 "altitude": 110.48
               },
               {
                 "seq": 12,
-                "name": "向荣一号_012_航点",
+                "name": null,
                 "lon": 118.8237891799,
                 "lat": 31.932713963,
                 "altitude": 110.09
               },
               {
                 "seq": 13,
-                "name": "向荣一号_013_塔",
+                "name": null,
                 "lon": 118.824444432,
                 "lat": 31.9327366363,
                 "altitude": 110.86
               },
               {
                 "seq": 14,
-                "name": "向荣一号_014_杆",
+                "name": null,
                 "lon": 118.8239028077,
                 "lat": 31.9325974715,
                 "altitude": 110.69
               },
               {
                 "seq": 15,
-                "name": "向荣一号_015_节点",
+                "name": null,
                 "lon": 118.8240636065,
                 "lat": 31.9322956255,
                 "altitude": 111.01
               },
               {
                 "seq": 16,
-                "name": "向荣一号_016_航点",
+                "name": null,
                 "lon": 118.8242265259,
                 "lat": 31.9322756468,
                 "altitude": 111.99
               },
               {
                 "seq": 17,
-                "name": "向荣一号_017_塔",
+                "name": null,
                 "lon": 118.8250800496,
                 "lat": 31.9321498757,
                 "altitude": 108.85
               },
               {
                 "seq": 18,
-                "name": "向荣一号_018_杆",
+                "name": null,
                 "lon": 118.8247655242,
                 "lat": 31.9329199556,
                 "altitude": 111.52
               },
               {
                 "seq": 19,
-                "name": "向荣一号_019_节点",
+                "name": null,
                 "lon": 118.8250099539,
                 "lat": 31.932835797,
                 "altitude": 108.63
               },
               {
                 "seq": 20,
-                "name": "向荣一号_020_航点",
+                "name": null,
                 "lon": 118.824683247,
                 "lat": 31.9331414484,
                 "altitude": 110.45
               },
               {
                 "seq": 21,
-                "name": "向荣一号_021_塔",
+                "name": null,
                 "lon": 118.8247753398,
                 "lat": 31.9327523858,
                 "altitude": 108.03
               },
               {
                 "seq": 22,
-                "name": "向荣一号_022_杆",
+                "name": null,
                 "lon": 118.8241948428,
                 "lat": 31.932535501,
                 "altitude": 110.65
               },
               {
                 "seq": 23,
-                "name": "向荣一号_023_节点",
+                "name": null,
                 "lon": 118.8247734765,
                 "lat": 31.9328654758,
                 "altitude": 108.46
@@ -2913,7 +2913,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "向荣一号_001_塔",
+                "name": null,
                 "lon": 118.8241406884,
                 "lat": 31.9334587978,
                 "altitude": 32.233373
@@ -2921,7 +2921,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "向荣一号_002_杆",
+                "name": null,
                 "lon": 118.8242299164,
                 "lat": 31.9333029546,
                 "altitude": 30.542471
@@ -2929,7 +2929,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "向荣一号_003_节点",
+                "name": null,
                 "lon": 118.8243430508,
                 "lat": 31.9331736067,
                 "altitude": 32.163714
@@ -2937,7 +2937,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "向荣一号_004_航点",
+                "name": null,
                 "lon": 118.8244058468,
                 "lat": 31.9327762569,
                 "altitude": 29.641837
@@ -2945,7 +2945,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "向荣一号_005_塔",
+                "name": null,
                 "lon": 118.8242199875,
                 "lat": 31.9326733821,
                 "altitude": 31.014988
@@ -2953,7 +2953,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "向荣一号_006_杆",
+                "name": null,
                 "lon": 118.8243444919,
                 "lat": 31.9322909155,
                 "altitude": 29.448943
@@ -2961,7 +2961,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "向荣一号_007_节点",
+                "name": null,
                 "lon": 118.8243544063,
                 "lat": 31.9318885688,
                 "altitude": 31.735606
@@ -2969,7 +2969,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "向荣一号_008_航点",
+                "name": null,
                 "lon": 118.8240828387,
                 "lat": 31.9319125945,
                 "altitude": 29.417781
@@ -2977,7 +2977,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "向荣一号_009_塔",
+                "name": null,
                 "lon": 118.8240795624,
                 "lat": 31.9314420737,
                 "altitude": 31.203084
@@ -2985,7 +2985,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "向荣一号_010_杆",
+                "name": null,
                 "lon": 118.8244662034,
                 "lat": 31.9324356916,
                 "altitude": 111.56
@@ -2993,7 +2993,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "向荣一号_011_节点",
+                "name": null,
                 "lon": 118.8240790922,
                 "lat": 31.9327204711,
                 "altitude": 110.48
@@ -3001,7 +3001,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "向荣一号_012_航点",
+                "name": null,
                 "lon": 118.8237891799,
                 "lat": 31.932713963,
                 "altitude": 110.09
@@ -3009,7 +3009,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "向荣一号_013_塔",
+                "name": null,
                 "lon": 118.824444432,
                 "lat": 31.9327366363,
                 "altitude": 110.86
@@ -3017,7 +3017,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "向荣一号_014_杆",
+                "name": null,
                 "lon": 118.8239028077,
                 "lat": 31.9325974715,
                 "altitude": 110.69
@@ -3025,7 +3025,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "向荣一号_015_节点",
+                "name": null,
                 "lon": 118.8240636065,
                 "lat": 31.9322956255,
                 "altitude": 111.01
@@ -3033,7 +3033,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "向荣一号_016_航点",
+                "name": null,
                 "lon": 118.8242265259,
                 "lat": 31.9322756468,
                 "altitude": 111.99
@@ -3041,7 +3041,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "向荣一号_017_塔",
+                "name": null,
                 "lon": 118.8250800496,
                 "lat": 31.9321498757,
                 "altitude": 108.85
@@ -3049,7 +3049,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "向荣一号_018_杆",
+                "name": null,
                 "lon": 118.8247655242,
                 "lat": 31.9329199556,
                 "altitude": 111.52
@@ -3057,7 +3057,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "向荣一号_019_节点",
+                "name": null,
                 "lon": 118.8250099539,
                 "lat": 31.932835797,
                 "altitude": 108.63
@@ -3065,7 +3065,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "向荣一号_020_航点",
+                "name": null,
                 "lon": 118.824683247,
                 "lat": 31.9331414484,
                 "altitude": 110.45
@@ -3073,7 +3073,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "向荣一号_021_塔",
+                "name": null,
                 "lon": 118.8247753398,
                 "lat": 31.9327523858,
                 "altitude": 108.03
@@ -3081,7 +3081,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "向荣一号_022_杆",
+                "name": null,
                 "lon": 118.8241948428,
                 "lat": 31.932535501,
                 "altitude": 110.65
@@ -3089,7 +3089,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "向荣一号_023_节点",
+                "name": null,
                 "lon": 118.8247734765,
                 "lat": 31.9328654758,
                 "altitude": 108.46
@@ -3123,169 +3123,169 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "总部基地_001_塔",
-            "segment_end_waypoint": "梅兰东路_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 23,
-            "first_waypoint": "总部基地_001_塔",
-            "last_waypoint": "总部基地_023_节点",
+            "first_waypoint": 0,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "总部基地_001_塔",
+                "name": null,
                 "lon": 118.8278650079,
                 "lat": 31.9338084488,
                 "altitude": 30.703294
               },
               {
                 "seq": 2,
-                "name": "总部基地_002_杆",
+                "name": null,
                 "lon": 118.8277006768,
                 "lat": 31.9334915462,
                 "altitude": 31.794745
               },
               {
                 "seq": 3,
-                "name": "总部基地_003_节点",
+                "name": null,
                 "lon": 118.827643129,
                 "lat": 31.933226295,
                 "altitude": 30.795335
               },
               {
                 "seq": 4,
-                "name": "总部基地_004_航点",
+                "name": null,
                 "lon": 118.8278103444,
                 "lat": 31.9329659026,
                 "altitude": 30.112595
               },
               {
                 "seq": 5,
-                "name": "总部基地_005_塔",
+                "name": null,
                 "lon": 118.8279390524,
                 "lat": 31.9329820834,
                 "altitude": 30.591747
               },
               {
                 "seq": 6,
-                "name": "总部基地_006_杆",
+                "name": null,
                 "lon": 118.8276297203,
                 "lat": 31.9324147327,
                 "altitude": 29.951539
               },
               {
                 "seq": 7,
-                "name": "总部基地_007_节点",
+                "name": null,
                 "lon": 118.827506751,
                 "lat": 31.9324398438,
                 "altitude": 29.867791
               },
               {
                 "seq": 8,
-                "name": "总部基地_008_航点",
+                "name": null,
                 "lon": 118.8274205095,
                 "lat": 31.931878723,
                 "altitude": 31.070755
               },
               {
                 "seq": 9,
-                "name": "总部基地_009_塔",
+                "name": null,
                 "lon": 118.8274054324,
                 "lat": 31.9321283047,
                 "altitude": 31.756353
               },
               {
                 "seq": 10,
-                "name": "总部基地_010_杆",
+                "name": null,
                 "lon": 118.8276675955,
                 "lat": 31.9330065624,
                 "altitude": 110.68
               },
               {
                 "seq": 11,
-                "name": "总部基地_011_节点",
+                "name": null,
                 "lon": 118.8273599051,
                 "lat": 31.9329431468,
                 "altitude": 111.74
               },
               {
                 "seq": 12,
-                "name": "总部基地_012_航点",
+                "name": null,
                 "lon": 118.8271802708,
                 "lat": 31.9331473623,
                 "altitude": 111.14
               },
               {
                 "seq": 13,
-                "name": "总部基地_013_塔",
+                "name": null,
                 "lon": 118.8276681064,
                 "lat": 31.9332283267,
                 "altitude": 108.39
               },
               {
                 "seq": 14,
-                "name": "总部基地_014_杆",
+                "name": null,
                 "lon": 118.8273182268,
                 "lat": 31.9331141472,
                 "altitude": 109.87
               },
               {
                 "seq": 15,
-                "name": "总部基地_015_节点",
+                "name": null,
                 "lon": 118.8276210537,
                 "lat": 31.933009938,
                 "altitude": 111.94
               },
               {
                 "seq": 16,
-                "name": "总部基地_016_航点",
+                "name": null,
                 "lon": 118.8275420507,
                 "lat": 31.9327422483,
                 "altitude": 109.36
               },
               {
                 "seq": 17,
-                "name": "总部基地_017_塔",
+                "name": null,
                 "lon": 118.8282993953,
                 "lat": 31.932755113,
                 "altitude": 108.76
               },
               {
                 "seq": 18,
-                "name": "总部基地_018_杆",
+                "name": null,
                 "lon": 118.828175572,
                 "lat": 31.933113129,
                 "altitude": 109.11
               },
               {
                 "seq": 19,
-                "name": "总部基地_019_节点",
+                "name": null,
                 "lon": 118.8279322756,
                 "lat": 31.9336680401,
                 "altitude": 109.77
               },
               {
                 "seq": 20,
-                "name": "总部基地_020_航点",
+                "name": null,
                 "lon": 118.8279998095,
                 "lat": 31.9335495197,
                 "altitude": 108.2
               },
               {
                 "seq": 21,
-                "name": "总部基地_021_塔",
+                "name": null,
                 "lon": 118.8280825695,
                 "lat": 31.9333616166,
                 "altitude": 111.88
               },
               {
                 "seq": 22,
-                "name": "总部基地_022_杆",
+                "name": null,
                 "lon": 118.8275604006,
                 "lat": 31.9333650911,
                 "altitude": 108.67
               },
               {
                 "seq": 23,
-                "name": "总部基地_023_节点",
+                "name": null,
                 "lon": 118.8278015032,
                 "lat": 31.9334131495,
                 "altitude": 109.6
@@ -3301,7 +3301,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "总部基地_001_塔",
+                "name": null,
                 "lon": 118.8278650079,
                 "lat": 31.9338084488,
                 "altitude": 30.703294
@@ -3309,7 +3309,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "总部基地_002_杆",
+                "name": null,
                 "lon": 118.8277006768,
                 "lat": 31.9334915462,
                 "altitude": 31.794745
@@ -3317,7 +3317,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "总部基地_003_节点",
+                "name": null,
                 "lon": 118.827643129,
                 "lat": 31.933226295,
                 "altitude": 30.795335
@@ -3325,7 +3325,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "总部基地_004_航点",
+                "name": null,
                 "lon": 118.8278103444,
                 "lat": 31.9329659026,
                 "altitude": 30.112595
@@ -3333,7 +3333,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "总部基地_005_塔",
+                "name": null,
                 "lon": 118.8279390524,
                 "lat": 31.9329820834,
                 "altitude": 30.591747
@@ -3341,7 +3341,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "总部基地_006_杆",
+                "name": null,
                 "lon": 118.8276297203,
                 "lat": 31.9324147327,
                 "altitude": 29.951539
@@ -3349,7 +3349,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "总部基地_007_节点",
+                "name": null,
                 "lon": 118.827506751,
                 "lat": 31.9324398438,
                 "altitude": 29.867791
@@ -3357,7 +3357,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "总部基地_008_航点",
+                "name": null,
                 "lon": 118.8274205095,
                 "lat": 31.931878723,
                 "altitude": 31.070755
@@ -3365,7 +3365,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "总部基地_009_塔",
+                "name": null,
                 "lon": 118.8274054324,
                 "lat": 31.9321283047,
                 "altitude": 31.756353
@@ -3373,7 +3373,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "总部基地_010_杆",
+                "name": null,
                 "lon": 118.8276675955,
                 "lat": 31.9330065624,
                 "altitude": 110.68
@@ -3381,7 +3381,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "总部基地_011_节点",
+                "name": null,
                 "lon": 118.8273599051,
                 "lat": 31.9329431468,
                 "altitude": 111.74
@@ -3389,7 +3389,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "总部基地_012_航点",
+                "name": null,
                 "lon": 118.8271802708,
                 "lat": 31.9331473623,
                 "altitude": 111.14
@@ -3397,7 +3397,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "总部基地_013_塔",
+                "name": null,
                 "lon": 118.8276681064,
                 "lat": 31.9332283267,
                 "altitude": 108.39
@@ -3405,7 +3405,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "总部基地_014_杆",
+                "name": null,
                 "lon": 118.8273182268,
                 "lat": 31.9331141472,
                 "altitude": 109.87
@@ -3413,7 +3413,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "总部基地_015_节点",
+                "name": null,
                 "lon": 118.8276210537,
                 "lat": 31.933009938,
                 "altitude": 111.94
@@ -3421,7 +3421,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "总部基地_016_航点",
+                "name": null,
                 "lon": 118.8275420507,
                 "lat": 31.9327422483,
                 "altitude": 109.36
@@ -3429,7 +3429,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "总部基地_017_塔",
+                "name": null,
                 "lon": 118.8282993953,
                 "lat": 31.932755113,
                 "altitude": 108.76
@@ -3437,7 +3437,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "总部基地_018_杆",
+                "name": null,
                 "lon": 118.828175572,
                 "lat": 31.933113129,
                 "altitude": 109.11
@@ -3445,7 +3445,7 @@
               {
                 "seq": 19,
                 "type": "waypoint",
-                "name": "总部基地_019_节点",
+                "name": null,
                 "lon": 118.8279322756,
                 "lat": 31.9336680401,
                 "altitude": 109.77
@@ -3453,7 +3453,7 @@
               {
                 "seq": 20,
                 "type": "waypoint",
-                "name": "总部基地_020_航点",
+                "name": null,
                 "lon": 118.8279998095,
                 "lat": 31.9335495197,
                 "altitude": 108.2
@@ -3461,7 +3461,7 @@
               {
                 "seq": 21,
                 "type": "waypoint",
-                "name": "总部基地_021_塔",
+                "name": null,
                 "lon": 118.8280825695,
                 "lat": 31.9333616166,
                 "altitude": 111.88
@@ -3469,7 +3469,7 @@
               {
                 "seq": 22,
                 "type": "waypoint",
-                "name": "总部基地_022_杆",
+                "name": null,
                 "lon": 118.8275604006,
                 "lat": 31.9333650911,
                 "altitude": 108.67
@@ -3477,7 +3477,7 @@
               {
                 "seq": 23,
                 "type": "waypoint",
-                "name": "总部基地_023_节点",
+                "name": null,
                 "lon": 118.8278015032,
                 "lat": 31.9334131495,
                 "altitude": 109.6
@@ -3511,134 +3511,134 @@
             "within_work_order_window": true,
             "segment_index": 1,
             "segment_count": 1,
-            "segment_start_waypoint": "总部基地_001_塔",
-            "segment_end_waypoint": "梅兰东路_023_节点",
+            "segment_start_waypoint": 0,
+            "segment_end_waypoint": 22,
             "waypoint_count": 18,
-            "first_waypoint": "梅兰东路_003_节点",
-            "last_waypoint": "梅兰东路_023_节点",
+            "first_waypoint": 2,
+            "last_waypoint": 22,
             "waypoints": [
               {
                 "seq": 1,
-                "name": "梅兰东路_003_节点",
+                "name": null,
                 "lon": 118.827624554,
                 "lat": 31.9353513794,
                 "altitude": 30.443212
               },
               {
                 "seq": 2,
-                "name": "梅兰东路_004_航点",
+                "name": null,
                 "lon": 118.8270902641,
                 "lat": 31.9351763948,
                 "altitude": 30.693512
               },
               {
                 "seq": 3,
-                "name": "梅兰东路_005_塔",
+                "name": null,
                 "lon": 118.8270578844,
                 "lat": 31.9349114591,
                 "altitude": 31.2271
               },
               {
                 "seq": 4,
-                "name": "梅兰东路_006_杆",
+                "name": null,
                 "lon": 118.8273461396,
                 "lat": 31.9346743946,
                 "altitude": 31.045244
               },
               {
                 "seq": 5,
-                "name": "梅兰东路_007_节点",
+                "name": null,
                 "lon": 118.827489558,
                 "lat": 31.9342907579,
                 "altitude": 31.594904
               },
               {
                 "seq": 6,
-                "name": "梅兰东路_008_航点",
+                "name": null,
                 "lon": 118.8274072627,
                 "lat": 31.9342402774,
                 "altitude": 29.643885
               },
               {
                 "seq": 7,
-                "name": "梅兰东路_009_塔",
+                "name": null,
                 "lon": 118.8275423952,
                 "lat": 31.9339870094,
                 "altitude": 29.455684
               },
               {
                 "seq": 8,
-                "name": "梅兰东路_010_杆",
+                "name": null,
                 "lon": 118.8273831109,
                 "lat": 31.9355722563,
                 "altitude": 110.41
               },
               {
                 "seq": 9,
-                "name": "梅兰东路_011_节点",
+                "name": null,
                 "lon": 118.82741564,
                 "lat": 31.9355015987,
                 "altitude": 110.14
               },
               {
                 "seq": 10,
-                "name": "梅兰东路_012_航点",
+                "name": null,
                 "lon": 118.8271215144,
                 "lat": 31.9352908803,
                 "altitude": 110.21
               },
               {
                 "seq": 11,
-                "name": "梅兰东路_015_节点",
+                "name": null,
                 "lon": 118.8270203472,
                 "lat": 31.934979552,
                 "altitude": 108.32
               },
               {
                 "seq": 12,
-                "name": "梅兰东路_016_航点",
+                "name": null,
                 "lon": 118.8273226745,
                 "lat": 31.9347612764,
                 "altitude": 109.11
               },
               {
                 "seq": 13,
-                "name": "梅兰东路_017_塔",
+                "name": null,
                 "lon": 118.8278638024,
                 "lat": 31.9350248185,
                 "altitude": 109.48
               },
               {
                 "seq": 14,
-                "name": "梅兰东路_018_杆",
+                "name": null,
                 "lon": 118.8277321081,
                 "lat": 31.9352201867,
                 "altitude": 111.75
               },
               {
                 "seq": 15,
-                "name": "梅兰东路_019_节点",
+                "name": null,
                 "lon": 118.827871213,
                 "lat": 31.9356795594,
                 "altitude": 108.68
               },
               {
                 "seq": 16,
-                "name": "梅兰东路_020_航点",
+                "name": null,
                 "lon": 118.8276204761,
                 "lat": 31.935517366,
                 "altitude": 109.52
               },
               {
                 "seq": 17,
-                "name": "梅兰东路_021_塔",
+                "name": null,
                 "lon": 118.827776714,
                 "lat": 31.9354439999,
                 "altitude": 110.23
               },
               {
                 "seq": 18,
-                "name": "梅兰东路_023_节点",
+                "name": null,
                 "lon": 118.8273475473,
                 "lat": 31.9355041613,
                 "altitude": 109.26
@@ -3654,7 +3654,7 @@
               {
                 "seq": 1,
                 "type": "waypoint",
-                "name": "梅兰东路_003_节点",
+                "name": null,
                 "lon": 118.827624554,
                 "lat": 31.9353513794,
                 "altitude": 30.443212
@@ -3662,7 +3662,7 @@
               {
                 "seq": 2,
                 "type": "waypoint",
-                "name": "梅兰东路_004_航点",
+                "name": null,
                 "lon": 118.8270902641,
                 "lat": 31.9351763948,
                 "altitude": 30.693512
@@ -3670,7 +3670,7 @@
               {
                 "seq": 3,
                 "type": "waypoint",
-                "name": "梅兰东路_005_塔",
+                "name": null,
                 "lon": 118.8270578844,
                 "lat": 31.9349114591,
                 "altitude": 31.2271
@@ -3678,7 +3678,7 @@
               {
                 "seq": 4,
                 "type": "waypoint",
-                "name": "梅兰东路_006_杆",
+                "name": null,
                 "lon": 118.8273461396,
                 "lat": 31.9346743946,
                 "altitude": 31.045244
@@ -3686,7 +3686,7 @@
               {
                 "seq": 5,
                 "type": "waypoint",
-                "name": "梅兰东路_007_节点",
+                "name": null,
                 "lon": 118.827489558,
                 "lat": 31.9342907579,
                 "altitude": 31.594904
@@ -3694,7 +3694,7 @@
               {
                 "seq": 6,
                 "type": "waypoint",
-                "name": "梅兰东路_008_航点",
+                "name": null,
                 "lon": 118.8274072627,
                 "lat": 31.9342402774,
                 "altitude": 29.643885
@@ -3702,7 +3702,7 @@
               {
                 "seq": 7,
                 "type": "waypoint",
-                "name": "梅兰东路_009_塔",
+                "name": null,
                 "lon": 118.8275423952,
                 "lat": 31.9339870094,
                 "altitude": 29.455684
@@ -3710,7 +3710,7 @@
               {
                 "seq": 8,
                 "type": "waypoint",
-                "name": "梅兰东路_010_杆",
+                "name": null,
                 "lon": 118.8273831109,
                 "lat": 31.9355722563,
                 "altitude": 110.41
@@ -3718,7 +3718,7 @@
               {
                 "seq": 9,
                 "type": "waypoint",
-                "name": "梅兰东路_011_节点",
+                "name": null,
                 "lon": 118.82741564,
                 "lat": 31.9355015987,
                 "altitude": 110.14
@@ -3726,7 +3726,7 @@
               {
                 "seq": 10,
                 "type": "waypoint",
-                "name": "梅兰东路_012_航点",
+                "name": null,
                 "lon": 118.8271215144,
                 "lat": 31.9352908803,
                 "altitude": 110.21
@@ -3734,7 +3734,7 @@
               {
                 "seq": 11,
                 "type": "waypoint",
-                "name": "梅兰东路_015_节点",
+                "name": null,
                 "lon": 118.8270203472,
                 "lat": 31.934979552,
                 "altitude": 108.32
@@ -3742,7 +3742,7 @@
               {
                 "seq": 12,
                 "type": "waypoint",
-                "name": "梅兰东路_016_航点",
+                "name": null,
                 "lon": 118.8273226745,
                 "lat": 31.9347612764,
                 "altitude": 109.11
@@ -3750,7 +3750,7 @@
               {
                 "seq": 13,
                 "type": "waypoint",
-                "name": "梅兰东路_017_塔",
+                "name": null,
                 "lon": 118.8278638024,
                 "lat": 31.9350248185,
                 "altitude": 109.48
@@ -3758,7 +3758,7 @@
               {
                 "seq": 14,
                 "type": "waypoint",
-                "name": "梅兰东路_018_杆",
+                "name": null,
                 "lon": 118.8277321081,
                 "lat": 31.9352201867,
                 "altitude": 111.75
@@ -3766,7 +3766,7 @@
               {
                 "seq": 15,
                 "type": "waypoint",
-                "name": "梅兰东路_019_节点",
+                "name": null,
                 "lon": 118.827871213,
                 "lat": 31.9356795594,
                 "altitude": 108.68
@@ -3774,7 +3774,7 @@
               {
                 "seq": 16,
                 "type": "waypoint",
-                "name": "梅兰东路_020_航点",
+                "name": null,
                 "lon": 118.8276204761,
                 "lat": 31.935517366,
                 "altitude": 109.52
@@ -3782,7 +3782,7 @@
               {
                 "seq": 17,
                 "type": "waypoint",
-                "name": "梅兰东路_021_塔",
+                "name": null,
                 "lon": 118.827776714,
                 "lat": 31.9354439999,
                 "altitude": 110.23
@@ -3790,7 +3790,7 @@
               {
                 "seq": 18,
                 "type": "waypoint",
-                "name": "梅兰东路_023_节点",
+                "name": null,
                 "lon": 118.8273475473,
                 "lat": 31.9355041613,
                 "altitude": 109.26
@@ -3818,7 +3818,7 @@
     "data": {
       "recommended_scheme": "time_first",
       "recommended_label": "时效优先方案",
-      "reason": "该工单为1级/立即执行，推荐优先级依次为：无返航风险、架次少、最长耗时短、电量风险少、总距离短。最终选定时效优先方案（状态=success），共3个架次，最长耗时13.4分钟，最低电量余量68.7%，总飞行距离6067.3米。相较于均衡方案，本方案最长耗时由14.9分钟缩短至13.4分钟，总距离由5890.8米增加至6067.3米。"
+      "reason": "该工单为1级/立即执行，推荐优先级依次为：无返航风险、架次少、最长耗时短、电量风险少、总距离短。最终选定时效优先方案，状态为success，共3个架次，最长耗时13.4min，最低电量余量68.7%，总距离6067.3m。对比均衡方案，本方案最长耗时13.4min（均衡方案为14.9min），总距离6067.3m（均衡方案为5890.8m）。"
     }
   },
   "infeasible_reason": {
@@ -3831,7 +3831,7 @@
         "scheme_name": "energy_first",
         "scheme_label": "电量稳健方案",
         "status": "success",
-        "reason": "该方案与已生成方案的机场分配、接力段及关键执行指标完全一致，因此被识别为重复方案并予以过滤。",
+        "reason": "该方案与已生成方案的机场分配、接力段及关键执行指标完全一致，因此被判定为重复方案并予以过滤。",
         "failed_plans": [],
         "unassigned": [],
         "suggestion": "检查覆盖半径、机场/无人机状态、气象阈值和电量阈值；必要时进入延期池或人工改派。"

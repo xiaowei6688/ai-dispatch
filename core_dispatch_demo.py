@@ -350,7 +350,16 @@ def parse_targets(data: Dict[str, Any]) -> List[TargetPoint]:
     for group in work_order.get("woder_order_detail", []):
         group_id = str(group.get("obj_id", ""))
         group_name = str(group.get("obj_name", ""))
-        route_points = list(group.get("obj_data", []))
+        raw_route_points = list(group.get("obj_data", []))
+        route_points = [
+            {
+                "index": raw.get("index", point_index),
+                "lon": float(raw.get("longitude", raw.get("lon"))),
+                "lat": float(raw.get("latitude", raw.get("lat"))),
+                "altitude": float(raw.get("altitude", 0) or 0),
+            }
+            for point_index, raw in enumerate(raw_route_points)
+        ]
         if not route_points:
             continue
         lon = sum(float(p.get("lon")) for p in route_points) / len(route_points)
@@ -1326,8 +1335,8 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                     and leg_total_min <= max_min
                     and battery_meta["remaining_pct"] > PARAMS["battery_return_pct"]
                 )
-                start_wp = leg_items[0].route_points[0].get("name") if leg_items[0].route_points else ""
-                end_wp = leg_items[-1].route_points[-1].get("name") if leg_items[-1].route_points else ""
+                start_wp = leg_items[0].route_points[0].get("index") if leg_items[0].route_points else ""
+                end_wp = leg_items[-1].route_points[-1].get("index") if leg_items[-1].route_points else ""
                 segment_index = getattr(leg_items[0], "segment_index", 1) if len(leg_items) == 1 else 1
                 segment_count = getattr(leg_items[0], "segment_count", 1) if len(leg_items) == 1 else 1
                 plans.append(
@@ -1352,8 +1361,8 @@ def build_scheme(data: Dict[str, Any], scheme_name: str) -> Dict[str, Any]:
                                 "center_lon": item.lon,
                                 "center_lat": item.lat,
                                 "waypoint_count": len(item.route_points),
-                                "first_waypoint": item.route_points[0].get("name") if item.route_points else "",
-                                "last_waypoint": item.route_points[-1].get("name") if item.route_points else "",
+                                "first_waypoint": item.route_points[0].get("index") if item.route_points else "",
+                                "last_waypoint": item.route_points[-1].get("index") if item.route_points else "",
                                 "waypoints": item.route_points,
                             }
                             for item in leg_items
@@ -1490,14 +1499,14 @@ def build_rule_audit(data: Dict[str, Any]) -> List[Dict[str, str]]:
         {"param": "P013", "json_fields": "current_task_id/current_task, task_priority, task_progress, woker_order_level", "usage": "1级工单仅可抢占未到进度保护线的低优先级任务，不可抢占同为1级的任务"},
         {"param": "P014", "json_fields": "JSON缺任务类型白名单", "usage": "白名单为空，当前不额外限制抢占"},
         {"param": "P015", "json_fields": "woker_order_level, woker_order_execution", "usage": "1级偏自动推荐，2-3级可人工确认，4级偏排班"},
-        {"param": "P028", "json_fields": "woder_order_detail[].obj_data[].lon/lat", "usage": "线路航点跨度用于协同拆分评估"},
+        {"param": "P028", "json_fields": "woder_order_detail[].obj_data[].longitude/latitude", "usage": "线路航点跨度用于协同拆分评估"},
         {"param": "P029", "json_fields": "woder_order_detail", "usage": f"对象数>={PARAMS['P029_multi_object_trigger']}触发多机场/多机协同评估"},
         {"param": "P037", "json_fields": "drone.battery_life", "usage": "满电续航是所有续航和接力计算基准"},
         {"param": "P038", "json_fields": "drone.drone_vertical, obj_data速度缺省", "usage": "去首航点和返航按JSON速度，航点内速度字段缺省时沿用该速度"},
         {"param": "P039", "json_fields": "woder_order_detail[].obj_data", "usage": f"作业时长=航点数×{PARAMS['P039_work_sec_per_waypoint']}秒，按实际分段航点数计算"},
         {"param": "P040", "json_fields": "无显式字段", "usage": f"每段加入起飞前准备{PARAMS['P040_prepare_min']}min"},
         {"param": "P041", "json_fields": "inspection_radius", "usage": "覆盖预筛使用机场台账半径"},
-        {"param": "P042", "json_fields": "obj_data[].lon/lat", "usage": "规则表暂不考虑，当前不做顺路合并"},
+        {"param": "P042", "json_fields": "obj_data[].longitude/latitude", "usage": "规则表暂不考虑，当前不做顺路合并"},
         {"param": "P043", "json_fields": "drone.charging_duration", "usage": "同一无人机连续架次之间加入满充/换电恢复等待时间"},
         {"param": "扩展", "json_fields": "airport_cross_railway, day_or_night, humidity, altitude", "usage": "跨铁路、湿度、高度进入风险/展示；无硬阈值时不否决"},
     ]
