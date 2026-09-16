@@ -5,7 +5,7 @@ from typing import Any, Dict
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from core_dispatch_demo import enrich_result_with_llm, solve
+from core_dispatch import enrich_result_with_llm, solve
 
 
 app = FastAPI(title="ai-dispatch", version="0.1.0")
