@@ -7,6 +7,7 @@ import json
 import math
 import os
 import re
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -2429,6 +2430,48 @@ def build_table_output(result: Dict[str, Any]) -> Dict[str, Any]:
                 },
             },
         },
+    }
+
+
+def build_track_list_output(result: Dict[str, Any]) -> Dict[str, Any]:
+    """把推荐方案折叠成下游平台需要的航线列表结构。
+
+    trackList 的每一项对应推荐方案中的一条已规划航线
+    （即 ``plans[].route[]``，同一作业对象被拆分到多个机场/接力段时会产生多条）。
+    ``trackContent`` 为对象结构：保留输入 ``obj_data`` 中每个航点的原始字段，
+    并统计航点数量写入 ``datas[0].wy_count``。
+    """
+    scheme = result.get("recommended_scheme") or {}
+    track_list = []
+    for plan in scheme.get("plans", []):
+        for route in plan.get("route", []):
+            raw_waypoints = route.get("raw_waypoints") or route.get("waypoints") or []
+            items = [copy.deepcopy(point) for point in raw_waypoints]
+            track_content = {
+                "datas": [
+                    {
+                        "deviceType": 0,
+                        "wy_count": len(items),
+                        "items": items,
+                    }
+                ],
+                "manufacturer_name": "众芯汉创",
+                "version": "1.3",
+            }
+            track_list.append(
+                {
+                    "trackId": str(uuid.uuid4()),
+                    "trackPath": "",
+                    "trackContent": track_content,
+                    "trackType": "json",
+                    "airportGuid": plan.get("airport_uid"),
+                    "airportName": plan.get("airport_name"),
+                    "objId": route.get("obj_id"),
+                }
+            )
+    return {
+        "workOrderGuid": (result.get("work_order") or {}).get("guid"),
+        "trackList": track_list,
     }
 
 

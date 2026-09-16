@@ -5,7 +5,7 @@ from typing import Any, Dict
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from core_dispatch import enrich_result_with_llm, solve
+from core_dispatch import build_track_list_output, enrich_result_with_llm, solve
 
 
 app = FastAPI(title="ai-dispatch", version="0.1.0")
@@ -17,13 +17,13 @@ def health() -> Dict[str, str]:
 
 
 @app.post("/dispatch")
-def dispatch(payload: Dict[str, Any], llm_explain: bool = True) -> Dict[str, Any]:
+def dispatch(payload: Dict[str, Any], llm_explain: bool = False) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="Request body must be a JSON object.")
     result = solve(payload)
     if llm_explain:
         result = enrich_result_with_llm(result)
-    return result["table_output"]
+    return build_track_list_output(result)
 
 
 def main() -> None:

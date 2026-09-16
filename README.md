@@ -152,7 +152,7 @@ uv run uvicorn main:app --reload
 接口：
 
 - `GET /`：健康检查
-- `POST /dispatch`：直接提交 `无人机调度结构.json` 同结构的 JSON，请求体会被计算为 `core_demo_result.json` 那种输出结构，默认会走大模型润色
+- `POST /dispatch`：直接提交 `无人机调度结构.json` 同结构的 JSON，返回 `{workOrderGuid, trackList}` 结构；`trackList[].trackContent` 为 `{datas:[{deviceType, wy_count, items}], manufacturer_name:"众芯汉创", version:"1.3"}` 对象，其中 `items` 为该航线分配到的原始航点列表、`wy_count` 为航点数量，`trackType` 固定为 `json`。可选参数 `llm_explain=true` 仍会触发大模型润色内部决策文本（不影响该返回结构）。
 
 ### 8.1 优化器开关
 
