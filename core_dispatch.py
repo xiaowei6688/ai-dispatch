@@ -2400,6 +2400,225 @@ def build_track_list_output(result: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+_SCHEME_METRIC_KEYS = (
+    "assigned_target_count",
+    "unassigned_target_count",
+    "used_airport_count",
+    "segment_count",
+    "sortie_count",
+    "total_route_distance_m",
+    "max_plan_duration_min",
+    "min_battery_remaining_pct",
+    "avg_battery_remaining_pct",
+    "warn_or_worse_count",
+    "return_risk_count",
+    "estimated_completion_min",
+)
+
+
+def _scheme_metrics(scheme: Dict[str, Any]) -> Dict[str, Any]:
+    """从方案 summary 中抽取少量、确定性的指标，供说明生成与结构化返回复用。"""
+    s = scheme.get("summary") or {}
+    metrics = {key: s.get(key, 0) for key in _SCHEME_METRIC_KEYS}
+    metrics["within_work_order_window"] = bool(s.get("within_work_order_window", True))
+    return metrics
+
+
+def _scheme_flight_details(scheme: Dict[str, Any]) -> Dict[str, Any]:
+    """把方案 plans 压缩成航段叙述事实，供说明生成使用。"""
+    segments = []
+    for plan in scheme.get("plans") or []:
+        objects = list(plan.get("object_names") or [])
+        route_objects = [
+            r.get("obj_name") for r in plan.get("route") or [] if r.get("obj_name")
+        ]
+        if not objects and route_objects:
+            objects = route_objects
+        battery_level = plan.get("battery_level") or "正常"
+        relay_legs = plan.get("relay_legs") or 1
+        needs_charge_relay = bool(
+            plan.get("relay_reason")
+            or relay_legs != 1
+            or battery_level in ("接力", "返航")
+        )
+        segments.append(
+            {
+                "sortie_index": plan.get("sortie_index"),
+                "relay_leg": plan.get("relay_leg"),
+                "relay_legs": relay_legs,
+                "airport_name": plan.get("airport_name"),
+                "drone_id": plan.get("drone_id"),
+                "objects": objects,
+                "waypoint_count": plan.get("point_count"),
+                "start_waypoint": plan.get("segment_start_waypoint"),
+                "end_waypoint": plan.get("segment_end_waypoint"),
+                "flight_min": plan.get("flight_min"),
+                "work_min": plan.get("work_min"),
+                "total_min": plan.get("total_min"),
+                "battery_level": battery_level,
+                "battery_remaining_pct": plan.get("battery_remaining_pct"),
+                "needs_charge_relay": needs_charge_relay,
+                "relay_reason": plan.get("relay_reason") or "",
+            }
+        )
+    return {
+        "segment_count": len(segments),
+        "charge_relay_count": sum(1 for s in segments if s["needs_charge_relay"]),
+        "segments": segments,
+    }
+
+
+def _scheme_status(scheme: Dict[str, Any]) -> str:
+    if scheme.get("reject_reason"):
+        return "rejected"
+    return scheme.get("status") or "unknown"
+
+
+def _scheme_deterministic_description(scheme: Dict[str, Any]) -> str:
+    """无大模型时的兜底方案说明，基于结构化指标与航段细节生成。"""
+    label = scheme.get("scheme_label") or scheme.get("scheme_name") or ""
+    base = scheme.get("description") or ""
+    m = _scheme_metrics(scheme)
+    parts = [f"{label}：{base}".strip(" ：")]
+    parts.append(
+        f"共分配{m['assigned_target_count']}个作业对象、{m['segment_count']}个任务段，"
+        f"使用{m['used_airport_count']}个机场，拆分为{m['sortie_count']}个架次；"
+    )
+    parts.append(
+        f"总航线距离{m['total_route_distance_m']}米，单段最长耗时{m['max_plan_duration_min']}分钟，"
+        f"预计整体完成约{m['estimated_completion_min']}分钟；"
+    )
+    parts.append(
+        f"电量方面最低剩余{m['min_battery_remaining_pct']}%、平均剩余{m['avg_battery_remaining_pct']}%，"
+        f"预警及以下段数{m['warn_or_worse_count']}、返航风险段数{m['return_risk_count']}。"
+    )
+    details = _scheme_flight_details(scheme)
+    segments = details["segments"]
+    if segments:
+        narrations = []
+        for i, seg in enumerate(segments, start=1):
+            objects = "、".join(seg["objects"]) if seg["objects"] else "无"
+            if seg["needs_charge_relay"]:
+                charge_note = f"，飞完剩余电量{seg['battery_remaining_pct']}%（{seg['battery_level']}），需要返航充电/接力"
+            else:
+                charge_note = f"，飞完剩余电量{seg['battery_remaining_pct']}%（{seg['battery_level']}），无需返航充电"
+            relay_note = ""
+            if seg["relay_legs"] and seg["relay_legs"] > 1:
+                relay_note = f"，该航点被拆为{seg['relay_legs']}段接力（当前为第{seg['relay_leg']}段）"
+            narrations.append(
+                f"第{i}个航段：机场{seg['airport_name']}的{seg['drone_id']}执行，"
+                f"巡检对象为{objects}，共{seg['waypoint_count']}个航点，"
+                f"飞行约{seg['flight_min']}分钟+作业约{seg['work_min']}分钟，总计约{seg['total_min']}分钟"
+                f"{charge_note}{relay_note}"
+            )
+        parts.append("飞行细节：" + "；".join(narrations) + "。")
+    if scheme.get("reject_reason"):
+        parts.append(f"该方案未入选，原因：{scheme['reject_reason']}")
+    return "".join(parts)
+
+
+def _llm_describe_schemes(client: Any, payloads: List[Dict[str, Any]]) -> Dict[str, str]:
+    """一次性让大模型为多个方案生成详细业务说明，返回 {scheme_name: description}。"""
+    prompt = (
+        "你是无人机巡检调度结果解释器，服务于“众芯汉创”平台。"
+        "下面 JSON 数组中的每个元素代表一个调度方案，请为每个方案生成一段面向业务人员的中文说明，"
+        "尽量详细，讲清楚该方案是什么、关键指标表现、它与其他方案定位上的差异，并把 metrics 里的关键数字自然融入说明；"
+        "还要口述飞行细节：共有几个航段、每个航段由哪个机场的哪架无人机执行、各自巡检哪些对象，"
+        "飞完后哪些需要返航充电或接力；"
+        "如果标记 recommended=true 要说明它为何更值得推荐；如果有 reject_reason 要说明它为什么被筛除。\n"
+        "硬性要求：只能基于给定的事实和数字，不得编造任何新的数字、机场名、无人机ID或状态；"
+        "输出必须是严格 JSON 数组，每个元素只包含 scheme_name 和 description 两个字段，"
+        "不要输出任何解释或 Markdown 代码块。\n"
+        f"数据：{json.dumps(payloads, ensure_ascii=False)}"
+    )
+    try:
+        from langchain_core.messages import HumanMessage
+
+        resp = client.invoke([HumanMessage(content=prompt)])
+        raw = _extract_llm_output(resp)
+    except Exception:
+        return {}
+    parsed = None
+    try:
+        parsed = json.loads(raw)
+    except Exception:
+        start = raw.find("[")
+        end = raw.rfind("]")
+        if start != -1 and end != -1 and start <= end:
+            try:
+                parsed = json.loads(raw[start:end + 1])
+            except Exception:
+                parsed = None
+    if not isinstance(parsed, list):
+        return {}
+    out: Dict[str, str] = {}
+    for row in parsed:
+        if not isinstance(row, dict):
+            continue
+        key = row.get("scheme_name")
+        value = row.get("description")
+        if isinstance(key, str) and isinstance(value, str) and value.strip():
+            out[key] = value.strip()
+    return out
+
+
+def build_scheme_explanations(result: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """为接口返回生成不同方案的说明列表（含结构化指标）。"""
+    attempted = result.get("attempted_schemes") or []
+    if not attempted:
+        generated = result.get("schemes") or []
+        attempted = generated
+    recommended = result.get("recommended_scheme") or {}
+    recommended_name = recommended.get("scheme_name")
+
+    entries = []
+    payloads = []
+    for scheme in attempted:
+        if not isinstance(scheme, dict):
+            continue
+        status = _scheme_status(scheme)
+        is_recommended = bool(recommended_name and scheme.get("scheme_name") == recommended_name)
+        metrics = _scheme_metrics(scheme)
+        flight_details = _scheme_flight_details(scheme)
+        payload = {
+            "scheme_name": scheme.get("scheme_name"),
+            "scheme_label": scheme.get("scheme_label"),
+            "recommended": is_recommended,
+            "status": status,
+            "base_description": scheme.get("description") or "",
+            "reject_reason": scheme.get("reject_reason") or "",
+            "metrics": metrics,
+            "flight_details": flight_details,
+        }
+        entries.append((scheme, payload))
+
+        flat = dict(payload)
+        flat["metrics"] = metrics
+        flat["flight_details"] = flight_details
+        payloads.append(flat)
+
+    client = _load_llm_client()
+    llm_descriptions: Dict[str, str] = {}
+    if client and payloads:
+        llm_descriptions = _llm_describe_schemes(client, payloads)
+
+    output = []
+    for scheme, payload in entries:
+        metrics = payload["metrics"]
+        description = llm_descriptions.get(payload["scheme_name"]) or _scheme_deterministic_description(scheme)
+        item = {
+            "schemeName": payload["scheme_name"],
+            "schemeLabel": payload["scheme_label"],
+            "recommended": payload["recommended"],
+            "status": payload["status"],
+            "description": description,
+        }
+        if payload.get("reject_reason"):
+            item["rejectReason"] = payload["reject_reason"]
+        output.append(item)
+    return output
+
+
 def _route_color(index: int) -> Tuple[int, int, int]:
     palette = [
         (70, 130, 180),

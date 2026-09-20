@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from core_dispatch import build_track_list_output, enrich_result_with_llm, solve
+from core_dispatch import build_scheme_explanations, build_track_list_output, enrich_result_with_llm, solve
 
 
 app = FastAPI(title="ai-dispatch", version="0.1.0")
@@ -38,7 +38,9 @@ def dispatch(
     result = solve(payload, work_sec_per_waypoint=work_sec_per_waypoint)
     if llm_explain:
         result = enrich_result_with_llm(result)
-    return build_track_list_output(result)
+    response = build_track_list_output(result)
+    response["schemes"] = build_scheme_explanations(result)
+    return response
 
 
 def main() -> None:

@@ -154,6 +154,7 @@ uv run uvicorn main:app --reload
 - `GET /`：健康检查
 - `POST /dispatch`：直接提交 `无人机调度结构.json` 同结构的 JSON，返回 `{workOrderGuid, trackList}` 结构；`trackList[].trackContent` 为 `{datas:[{deviceType, wy_count, items}], manufacturer_name:"众芯汉创", version:"1.3"}` 对象，其中 `items` 为该航线分配到的原始航点列表、`wy_count` 为航点数量，`trackType` 固定为 `json`。可选参数 `llm_explain=true` 仍会触发大模型润色内部决策文本（不影响该返回结构）。
 - `POST /dispatch` 支持 query 参数 `work_sec_per_waypoint`（单位秒），用于指定单个航点作业时长；不传时使用 `dispatch_config.py` 中 `P039_work_sec_per_waypoint` 的默认值 10 秒。例如真实巡检杆塔约需要 5 分钟时传 `?work_sec_per_waypoint=300`。
+- `POST /dispatch` 返回结果中新增 `schemes` 字段：包含均衡 / 时效优先 / 电量稳健三套方案，每套包含 `schemeName`、`schemeLabel`、`recommended`、`status`、`description`（被筛除的方案额外带 `rejectReason`）。关键指标与飞行细节（共几个航段、每个航段由哪个机场哪架无人机执行、巡检哪些对象、飞完哪些需要返航充电/接力）已融合进 `description`，大模型可用时自动生成更自然详细的业务说明，不可用时回退到基于指标的确定性说明。
 
 ### 8.1 优化器开关
 
