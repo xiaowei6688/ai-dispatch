@@ -1558,9 +1558,17 @@ def _llm_describe_schemes(client: Any, payloads: List[Dict[str, Any]]) -> Dict[s
         f"数据：{json.dumps(payloads, ensure_ascii=False)}"
     )
     try:
-        from langchain_core.messages import HumanMessage
-
-        resp = client.invoke([HumanMessage(content=prompt)])
+        from langchain_core.messages import HumanMessage, SystemMessage
+        messages = [
+            SystemMessage(content=[
+                {
+                    "type": "text",
+                    "text": prompt,
+                    "cache_control": {"type": "ephemeral"},
+                },
+            ])
+        ]
+        resp = client.invoke(messages)
         raw = _extract_llm_output(resp)
     except Exception:
         return {}
