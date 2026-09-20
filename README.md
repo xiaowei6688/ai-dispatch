@@ -153,6 +153,7 @@ uv run uvicorn main:app --reload
 
 - `GET /`：健康检查
 - `POST /dispatch`：直接提交 `无人机调度结构.json` 同结构的 JSON，返回 `{workOrderGuid, trackList}` 结构；`trackList[].trackContent` 为 `{datas:[{deviceType, wy_count, items}], manufacturer_name:"众芯汉创", version:"1.3"}` 对象，其中 `items` 为该航线分配到的原始航点列表、`wy_count` 为航点数量，`trackType` 固定为 `json`。可选参数 `llm_explain=true` 仍会触发大模型润色内部决策文本（不影响该返回结构）。
+- `POST /dispatch` 支持 query 参数 `work_sec_per_waypoint`（单位秒），用于指定单个航点作业时长；不传时使用 `dispatch_config.py` 中 `P039_work_sec_per_waypoint` 的默认值 10 秒。例如真实巡检杆塔约需要 5 分钟时传 `?work_sec_per_waypoint=300`。
 
 ### 8.1 优化器开关
 
@@ -213,7 +214,7 @@ uv run uvicorn main:app --reload
 
 ## 可配置参数
 
-脚本里所有非业务 JSON 直接提供的算法参数，都集中在 `CONFIGURABLE_PARAMS` 中，可在 JSON 的 `dispatch_params`、`baseline_params`、`params` 或 `work_order.dispatch_params` 中覆盖。
+脚本里所有非业务 JSON 直接提供的算法参数，都集中在 `dispatch_config.py` 的 `CONFIGURABLE_PARAMS` 中（默认值与注释说明已迁移到该文件）；运行时仍可在 JSON 的 `dispatch_params`、`baseline_params`、`params` 或 `work_order.dispatch_params` 中覆盖。
 
 常见可配项包括：
 

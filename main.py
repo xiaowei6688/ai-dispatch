@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, HTTPException
 import uvicorn
@@ -17,10 +17,25 @@ def health() -> Dict[str, str]:
 
 
 @app.post("/dispatch")
-def dispatch(payload: Dict[str, Any], llm_explain: bool = False) -> Dict[str, Any]:
+def dispatch(
+    payload: Dict[str, Any],
+    llm_explain: bool = False,
+    work_sec_per_waypoint: Optional[int] = None,
+) -> Dict[str, Any]:
+    """调度接口。
+
+    ``work_sec_per_waypoint`` 为单个航点作业时长（秒）：
+    不传时使用 dispatch_config.py 中的默认值 10 秒；
+    真实巡检杆塔等更耗时场景可通过该参数传递，例如 5 分钟传 300。
+    """
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="Request body must be a JSON object.")
-    result = solve(payload)
+    if work_sec_per_waypoint is not None and work_sec_per_waypoint <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="work_sec_per_waypoint must be a positive integer.",
+        )
+    result = solve(payload, work_sec_per_waypoint=work_sec_per_waypoint)
     if llm_explain:
         result = enrich_result_with_llm(result)
     return build_track_list_output(result)
