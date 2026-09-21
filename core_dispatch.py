@@ -1390,18 +1390,16 @@ def _extract_llm_output(resp: Any) -> str:
             text = "\n".join(lines[1:-1]).strip()
     return text
 
-def build_track_list_output(result: Dict[str, Any]) -> Dict[str, Any]:
-    """把推荐方案折叠成下游平台需要的航线列表结构。
+def build_track_list_for_scheme(scheme: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """把单个方案的 ``plans[].route[]`` 折叠成航线列表。
 
-    trackList 的每一项对应推荐方案中的一条已规划航线
-    （即 ``plans[].route[]``，同一作业对象被拆分到多个机场/接力段时会产生多条）。
+    同一作业对象被拆分到多个机场/接力段时会产生多条。
     ``trackContent`` 为对象结构：保留输入 ``obj_data`` 中每个航点的原始字段，
     并统计航点数量写入 ``datas[0].wy_count``。
     """
-    scheme = result.get("recommended_scheme") or {}
     track_list = []
-    for plan in scheme.get("plans", []):
-        for route in plan.get("route", []):
+    for plan in scheme.get("plans", []) or []:
+        for route in plan.get("route", []) or []:
             raw_waypoints = route.get("raw_waypoints") or route.get("waypoints") or []
             items = [copy.deepcopy(point) for point in raw_waypoints]
             track_content = {
@@ -1426,10 +1424,7 @@ def build_track_list_output(result: Dict[str, Any]) -> Dict[str, Any]:
                     "objId": route.get("obj_id"),
                 }
             )
-    return {
-        "workOrderGuid": (result.get("work_order") or {}).get("guid"),
-        "trackList": track_list,
-    }
+    return track_list
 
 _SCHEME_METRIC_KEYS = (
     "assigned_target_count",
@@ -1645,6 +1640,7 @@ def build_scheme_explanations(result: Dict[str, Any]) -> List[Dict[str, Any]]:
             "recommended": payload["recommended"],
             "status": payload["status"],
             "description": description,
+            "trackList": build_track_list_for_scheme(scheme),
         }
         if payload.get("reject_reason"):
             item["rejectReason"] = payload["reject_reason"]

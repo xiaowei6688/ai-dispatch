@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from core_dispatch import build_scheme_explanations, build_track_list_output, solve
+from core_dispatch import build_scheme_explanations, solve
 
 
 app = FastAPI(title="ai-dispatch", version="0.1.0")
@@ -35,9 +35,16 @@ def dispatch(
             detail="work_sec_per_waypoint must be a positive integer.",
         )
     result = solve(payload, work_sec_per_waypoint=work_sec_per_waypoint)
-    response = build_track_list_output(result)
-    response["schemes"] = build_scheme_explanations(result)
-    return response
+    schemes = build_scheme_explanations(result)
+    recommended_track_list = next(
+        (scheme.get("trackList") or [] for scheme in schemes if scheme.get("recommended")),
+        [],
+    )
+    return {
+        "workOrderGuid": (result.get("work_order") or {}).get("guid"),
+        "trackList": recommended_track_list,
+        "schemes": schemes,
+    }
 
 
 def main() -> None:
