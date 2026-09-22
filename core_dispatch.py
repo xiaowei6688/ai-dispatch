@@ -211,13 +211,36 @@ def parse_airports(data: Dict[str, Any]) -> List[Airport]:
         )
     return airports
 
+def extract_obj_waypoints(obj_data: Any) -> List[Dict[str, Any]]:
+    """从 ``obj_data`` 中取出航点列表。
+
+    兼容两种结构：
+    1. 旧结构：``obj_data`` 直接是航点 list；
+    2. 新结构：``obj_data`` 为 ``{"datas": [{"items": [...]}, ...], ...}`` 对象，
+       逐条取出 ``datas[].items`` 并合并成一个航点 list。
+    """
+    if isinstance(obj_data, list):
+        return [copy.deepcopy(raw) for raw in obj_data]
+    if not isinstance(obj_data, dict):
+        return []
+    datas = obj_data.get("datas")
+    points: List[Dict[str, Any]] = []
+    if isinstance(datas, list):
+        for ds in datas:
+            if isinstance(ds, dict):
+                items = ds.get("items")
+                if isinstance(items, list):
+                    points.extend(copy.deepcopy(item) for item in items)
+    return points
+
+
 def parse_targets(data: Dict[str, Any]) -> List[TargetPoint]:
     work_order = data.get("work_order", {})
     points: List[TargetPoint] = []
     for group in work_order.get("woder_order_detail", []):
         group_id = str(group.get("obj_id", ""))
         group_name = str(group.get("obj_name", ""))
-        raw_route_points = [copy.deepcopy(raw) for raw in group.get("obj_data", [])]
+        raw_route_points = extract_obj_waypoints(group.get("obj_data"))
         route_points = [
             {
                 "index": raw.get("index", point_index),
