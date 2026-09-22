@@ -1,0 +1,9 @@
+.git
+.venv
+.idea
+__pycache__
+*.py[co]
+.env
+.DS_Store
+core_demo_result.json
+core_demo_diagrams/
