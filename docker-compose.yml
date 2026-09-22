@@ -1,0 +1,10 @@
+services:
+  ai-dispatch:
+    build: .
+    image: ai-dispatch:latest
+    container_name: ai-dispatch
+    restart: unless-stopped
+    ports:
+      - "8089:8000"
+    env_file:
+      - .env
