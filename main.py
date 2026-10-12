@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import threading
 from typing import Any, Dict, Optional
 
@@ -32,13 +33,13 @@ def _validate(payload: Any, work_sec_per_waypoint: Optional[int]) -> None:
 
 def build_response(result: Dict[str, Any]) -> Dict[str, Any]:
     schemes = build_scheme_explanations(result)
-    recommended_track_list = next(
-        (scheme.get("trackList") or [] for scheme in schemes if scheme.get("recommended")),
-        [],
-    )
+    # recommended_track_list = next(
+    #     (scheme.get("trackList") or [] for scheme in schemes if scheme.get("recommended")),
+    #     [],
+    # )
     return {
         "workOrderGuid": (result.get("work_order") or {}).get("guid"),
-        "trackList": recommended_track_list,
+        # "trackList": recommended_track_list,
         "schemes": schemes,
     }
 
