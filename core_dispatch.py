@@ -1670,6 +1670,88 @@ def build_scheme_explanations(result: Dict[str, Any]) -> List[Dict[str, Any]]:
         output.append(item)
     return output
 
+def build_scheme_comparison(result: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """为接口返回生成方案对比列表。
+
+    每个元素对应一个方案，字段包含：机场名称、巡检总距离、预计完成时间、
+    无人机名称、当前无人机电量、方案优先级。多机场/多无人机时，名称与电量
+    按方案内 plans 的出现顺序用“、”拼接。
+    """
+    attempted = [s for s in (result.get("attempted_schemes") or []) if isinstance(s, dict)]
+    if not attempted:
+        attempted = [s for s in (result.get("schemes") or []) if isinstance(s, dict)]
+    attempted = [s for s in attempted if _scheme_status(s) == "success"]
+
+    work_order = result.get("work_order") or {}
+    level = work_order.get("level", 4)
+    execution = work_order.get("execution", 1)
+    ranking_input = {
+        "woker_order_level": level,
+        "woker_order_execution": execution,
+    }
+
+    ordered = sorted(
+        attempted,
+        key=lambda scheme: recommendation_key(scheme, ranking_input),
+    )
+    priority_by_name = {
+        scheme.get("scheme_name"): idx
+        for idx, scheme in enumerate(ordered, start=1)
+    }
+
+    comparison = []
+    for scheme in attempted:
+        if not isinstance(scheme, dict):
+            continue
+        summary = scheme.get("summary") or {}
+        plans = scheme.get("plans") or []
+        airport_names = []
+        seen_airports = set()
+        seen_drones = set()
+        drone_names = []
+        drone_batteries = []
+        for plan in plans:
+            if not isinstance(plan, dict):
+                continue
+            airport_name = plan.get("airport_name")
+            if airport_name not in (None, ""):
+                airport_name = str(airport_name)
+                if airport_name not in seen_airports:
+                    seen_airports.add(airport_name)
+                    airport_names.append(airport_name)
+            drone_name = plan.get("drone_name")
+            if drone_name not in (None, ""):
+                drone_name = str(drone_name)
+                if drone_name not in seen_drones:
+                    seen_drones.add(drone_name)
+                    drone_names.append(drone_name)
+                    drone_batteries.append(plan.get("battery_available_pct"))
+
+        comparison.append(
+            {
+                "schemeName": scheme.get("scheme_name"),
+                "schemeLabel": scheme.get("scheme_label"),
+                "status": _scheme_status(scheme),
+                "priority": priority_by_name.get(scheme.get("scheme_name")),
+                "airportName": "、".join(airport_names),
+                "totalInspectionDistanceM": round(
+                    float(summary.get("total_route_distance_m") or 0), 1
+                ),
+                "estimatedCompletionTime": round(
+                    float(summary.get("estimated_completion_min") or 0), 1
+                ),
+                "droneName": "、".join(drone_names),
+                "currentBatteryPct": "、".join(
+                    ""
+                    if b in (None, "")
+                    else (str(b) if str(b).endswith("%") else f"{b}%")
+                    for b in drone_batteries
+                ),
+            }
+        )
+    return comparison
+
+
 def solve(data: Dict[str, Any], work_sec_per_waypoint: Optional[int] = None) -> Dict[str, Any]:
     PARAMS.clear()
     PARAMS.update(CONFIGURABLE_PARAMS)

@@ -8,7 +8,7 @@ import httpx
 import uvicorn
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 
-from core_dispatch import build_scheme_explanations, solve
+from core_dispatch import build_scheme_comparison, build_scheme_explanations, solve
 
 
 app = FastAPI(title="ai-dispatch", version="0.1.0")
@@ -41,6 +41,7 @@ def build_response(result: Dict[str, Any]) -> Dict[str, Any]:
         "workOrderGuid": (result.get("work_order") or {}).get("guid"),
         # "trackList": recommended_track_list,
         "schemes": schemes,
+        "schemeComparison": build_scheme_comparison(result),
     }
 
 
